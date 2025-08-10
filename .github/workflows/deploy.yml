@@ -18,10 +18,9 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
         
     - name: Install dependencies
-      run: npm ci
+      run: npm install
       
     - name: Deploy to server
       uses: appleboy/ssh-action@v1.0.0
@@ -66,7 +65,7 @@ jobs:
           fi
           
           cd /opt/webapps/my-eerie-estate-dwell
-          npm ci --production
+          npm install --production
           
           if [ ! -f "ecosystem.config.js" ]; then
             cat > ecosystem.config.js << 'EOF'
@@ -102,3 +101,6 @@ jobs:
             pm2 startup systemd -u $USER --hp $HOME
             sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u $USER --hp $HOME
           fi
+          
+          echo "🎮 My Eerie Estate Dwell успешно развернуто!"
+          echo "📱 Приложение доступно на порту 3001"
