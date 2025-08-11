@@ -56,6 +56,41 @@
     --border-color: rgba(255, 255, 255, 0.12);
 }
 
+/* Base button styles for all platforms */
+.action-button,
+.location-button {
+    /* Force visibility and interaction */
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    
+    /* Ensure proper sizing */
+    min-height: 44px;
+    min-width: 44px;
+    
+    /* Force cursor */
+    cursor: pointer !important;
+    
+    /* Prevent text selection */
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    
+    /* Ensure proper positioning */
+    position: relative;
+    z-index: 10;
+    
+    /* Force border box */
+    box-sizing: border-box;
+    
+    /* Ensure text is visible */
+    color: inherit !important;
+    background: inherit !important;
+    border: inherit !important;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -283,8 +318,11 @@ body {
     
     /* Desktop-specific button fixes */
     outline: none;
-    border: none;
     background-clip: padding-box;
+    
+    /* Force visibility */
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .action-button:hover {
@@ -366,8 +404,11 @@ body {
     
     /* Desktop-specific button fixes */
     outline: none;
-    border: none;
     background-clip: padding-box;
+    
+    /* Force visibility */
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .location-button:hover {

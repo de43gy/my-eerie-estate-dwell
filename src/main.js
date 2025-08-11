@@ -204,9 +204,11 @@ class App {
                 setTimeout(() => {
                     if (e.target.classList.contains('action-button')) {
                         const actionId = e.target.dataset.action;
+                        console.log('Executing action via global handler:', actionId);
                         this.gameEngine.processAction(actionId);
                     } else if (e.target.classList.contains('location-button')) {
                         const locationId = e.target.dataset.location;
+                        console.log('Executing location move via global handler:', locationId);
                         this.gameEngine.moveToLocation(locationId);
                     }
                 }, 10);
@@ -215,6 +217,68 @@ class App {
         
         // Set up polling-based button system for Telegram Desktop
         this.setupTelegramDesktopPolling();
+        
+        // Additional aggressive event handling
+        this.setupAggressiveEventHandling();
+    }
+
+    setupAggressiveEventHandling() {
+        console.log('Setting up aggressive event handling for Telegram Desktop');
+        
+        // Force button interactions every 100ms
+        setInterval(() => {
+            const actionButtons = document.querySelectorAll('.action-button');
+            const locationButtons = document.querySelectorAll('.location-button');
+            
+            [...actionButtons, ...locationButtons].forEach(button => {
+                // Force button to be interactive
+                button.style.pointerEvents = 'auto';
+                button.style.cursor = 'pointer';
+                button.style.display = 'flex';
+                button.style.visibility = 'visible';
+                button.style.opacity = '1';
+                
+                // Add inline onclick handlers as ultimate fallback
+                if (!button.hasAttribute('data-aggressive-bound')) {
+                    button.setAttribute('data-aggressive-bound', 'true');
+                    
+                    if (button.classList.contains('action-button')) {
+                        const actionId = button.dataset.action;
+                        button.onclick = (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('Aggressive onclick handler triggered for action:', actionId);
+                            this.gameEngine.processAction(actionId);
+                        };
+                    } else if (button.classList.contains('location-button')) {
+                        const locationId = button.dataset.location;
+                        button.onclick = (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('Aggressive onclick handler triggered for location:', locationId);
+                            this.gameEngine.moveToLocation(locationId);
+                        };
+                    }
+                }
+            });
+        }, 100);
+        
+        // Also try to intercept all mouse events at document level
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('action-button') || e.target.classList.contains('location-button')) {
+                console.log('Document mousedown intercepted for button');
+                // Force immediate action
+                if (e.target.classList.contains('action-button')) {
+                    const actionId = e.target.dataset.action;
+                    console.log('Immediate action execution:', actionId);
+                    this.gameEngine.processAction(actionId);
+                } else if (e.target.classList.contains('location-button')) {
+                    const locationId = e.target.dataset.location;
+                    console.log('Immediate location execution:', locationId);
+                    this.gameEngine.moveToLocation(locationId);
+                }
+            }
+        }, { capture: true, passive: false });
     }
 
     setupTelegramDesktopPolling() {

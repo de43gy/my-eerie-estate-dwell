@@ -152,6 +152,11 @@ export class UIManager {
             actionButton.addEventListener('mousedown', handleClick, { capture: true });
             actionButton.addEventListener('touchend', handleClick, { passive: false });
             
+            // Additional event types for better compatibility
+            actionButton.addEventListener('mouseup', handleClick, { capture: true });
+            actionButton.addEventListener('pointerdown', handleClick, { capture: true });
+            actionButton.addEventListener('pointerup', handleClick, { capture: true });
+            
             // Desktop-specific enhancements
             const isDesktop = !/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             if (isDesktop) {
@@ -166,6 +171,8 @@ export class UIManager {
                 actionButton.style.display = 'flex';
                 actionButton.style.visibility = 'visible';
                 actionButton.style.opacity = '1';
+                actionButton.style.pointerEvents = 'auto';
+                actionButton.style.cursor = 'pointer';
             }
 
             // Special handling for Telegram Desktop
@@ -202,6 +209,8 @@ export class UIManager {
                     actionButton.addEventListener('click', handler, { capture: true });
                     actionButton.addEventListener('mousedown', handler, { capture: true });
                     actionButton.addEventListener('mouseup', handler, { capture: true });
+                    actionButton.addEventListener('pointerdown', handler, { capture: true });
+                    actionButton.addEventListener('pointerup', handler, { capture: true });
                 });
                 
                 // Also bind to parent for better event capture
@@ -210,6 +219,9 @@ export class UIManager {
                     parent.setAttribute('data-telegram-desktop-parent', 'true');
                     parent.style.pointerEvents = 'auto';
                 }
+                
+                // Ultimate fallback - inline onclick
+                actionButton.setAttribute('onclick', `if(window.gameEngineRef)window.gameEngineRef.processAction('${action.id}')`);
             }
 
             actionsList.appendChild(actionButton);
@@ -325,6 +337,8 @@ export class UIManager {
                     locationButton.addEventListener('click', handler, { capture: true });
                     locationButton.addEventListener('mousedown', handler, { capture: true });
                     locationButton.addEventListener('mouseup', handler, { capture: true });
+                    locationButton.addEventListener('pointerdown', handler, { capture: true });
+                    locationButton.addEventListener('pointerup', handler, { capture: true });
                 });
                 
                 // Also bind to parent for better event capture
@@ -333,7 +347,36 @@ export class UIManager {
                     parent.setAttribute('data-telegram-desktop-parent', 'true');
                     parent.style.pointerEvents = 'auto';
                 }
+                
+                // Ultimate fallback - inline onclick
+                locationButton.setAttribute('onclick', `if(window.gameEngineRef)window.gameEngineRef.moveToLocation('${connection.id}')`);
             }
+            
+            // Add basic event handlers for all platforms
+            const handleLocationClick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Location button clicked:', connection.id);
+                if (window.gameEngineRef) {
+                    window.gameEngineRef.moveToLocation(connection.id);
+                }
+            };
+            
+            // Multiple event binding for maximum compatibility
+            locationButton.onclick = handleLocationClick;
+            locationButton.addEventListener('click', handleLocationClick, { capture: true });
+            locationButton.addEventListener('mousedown', handleLocationClick, { capture: true });
+            locationButton.addEventListener('mouseup', handleLocationClick, { capture: true });
+            locationButton.addEventListener('pointerdown', handleLocationClick, { capture: true });
+            locationButton.addEventListener('pointerup', handleLocationClick, { capture: true });
+            locationButton.addEventListener('touchend', handleLocationClick, { passive: false });
+            
+            // Force button to be interactive
+            locationButton.style.pointerEvents = 'auto';
+            locationButton.style.cursor = 'pointer';
+            locationButton.style.display = 'flex';
+            locationButton.style.visibility = 'visible';
+            locationButton.style.opacity = '1';
 
             navigationContainer.appendChild(locationButton);
         });
