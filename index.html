@@ -62,13 +62,11 @@
     <!-- Load modules -->
     <script>
         function handleTestClick() {
-            const outputDiv = document.getElementById('test-output');
-    
-            if (outputDiv) {
-                const currentTime = new Date().toLocaleTimeString();
-                outputDiv.textContent = 'Тестовая кнопка РАБОТАЕТ! Время: ' + currentTime;
+            if (window.gameEngine) {
+            console.log("Вызов действия: examine_room");
+            window.gameEngine.processAction('examine_room');
             } else {
-                console.log('Тестовая кнопка РАБОТАЕТ!');
+            alert('Игровой движок еще не инициализирован.');
             }
         }
     </script>
