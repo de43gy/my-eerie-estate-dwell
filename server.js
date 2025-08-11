@@ -16,6 +16,7 @@ app.use(helmet({
             scriptSrc: [
                 "'self'", 
                 "'unsafe-inline'",
+                "'unsafe-eval'",
                 "https://telegram.org"
             ],
             styleSrc: ["'self'", "'unsafe-inline'"],
@@ -36,14 +37,26 @@ app.use(cors({
     credentials: true
 }));
 
-app.use(express.static(path.join(__dirname, 'src'), {
-    maxAge: '1d',
-    etag: true
-}));
+// Настройка правильных MIME типов
+express.static.mime.define({
+    'application/javascript': ['js'],
+    'text/css': ['css'],
+    'application/json': ['json']
+});
 
-app.use(express.static(path.join(__dirname, 'public'), {
+// Обслуживание статических файлов из корня проекта
+app.use(express.static(path.join(__dirname), {
     maxAge: '1d',
-    etag: true
+    etag: true,
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        } else if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css; charset=utf-8');
+        } else if (filePath.endsWith('.json')) {
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        }
+    }
 }));
 
 app.get('/', (req, res) => {
@@ -58,8 +71,20 @@ app.get('/health', (req, res) => {
     });
 });
 
+// Обработка 404 - возвращаем index.html только для HTML запросов
 app.use((req, res) => {
-    res.status(404).sendFile(path.join(__dirname, 'index.html'));
+    // Если запрашивается API endpoint, возвращаем 404
+    if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    
+    // Если запрашивается статический файл (js, css, json), возвращаем 404
+    if (req.path.match(/\.(js|css|json|png|jpg|ico)$/)) {
+        return res.status(404).send('File not found');
+    }
+    
+    // Для всех остальных запросов возвращаем index.html
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.use((err, req, res, next) => {
@@ -71,4 +96,5 @@ app.listen(PORT, () => {
     console.log(`🎮 My Eerie Estate Dwell запущен на порту ${PORT}`);
     console.log(`📱 Telegram WebApp готов к работе`);
     console.log(`🌍 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📁 Static files served from: ${__dirname}`);
 });
