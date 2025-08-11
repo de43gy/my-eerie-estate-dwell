@@ -11,7 +11,7 @@ export class ResourceManager {
 
     addResource(resourceId, amount) {
         if (!this.resourceData[resourceId]) {
-            console.error('Неизвестный ресурс:', resourceId);
+            console.error('Unknown resource:', resourceId);
             return false;
         }
 
@@ -20,7 +20,7 @@ export class ResourceManager {
         const totalWeight = this.getTotalWeight() + (amount * resourceWeight);
 
         if (totalWeight > this.maxCapacity) {
-            console.warn('Недостаточно места в инвентаре');
+            console.warn('Not enough inventory space');
             return false;
         }
 
@@ -32,7 +32,7 @@ export class ResourceManager {
         const currentAmount = this.inventory.get(resourceId) || 0;
         
         if (currentAmount < amount) {
-            console.warn(`Недостаточно ресурса: ${resourceId}`);
+            console.warn(`Not enough resource: ${resourceId}`);
             return false;
         }
 

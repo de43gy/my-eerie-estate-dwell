@@ -20,7 +20,7 @@ export class LocationManager {
 
     setCurrentLocation(locationId) {
         if (!this.locationData[locationId]) {
-            console.error('Неизвестная локация:', locationId);
+            console.error('Unknown location:', locationId);
             return false;
         }
 

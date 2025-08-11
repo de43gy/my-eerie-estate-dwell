@@ -16,10 +16,10 @@ export class SaveManager {
             const saveKey = slotIndex === 'auto' ? this.autoSaveKey : `${this.saveKey}_${slotIndex}`;
             localStorage.setItem(saveKey, JSON.stringify(saveData));
             
-            console.log(`Игра сохранена в слот ${slotIndex}`);
+            console.log(`Game saved to slot ${slotIndex}`);
             return true;
         } catch (error) {
-            console.error('Ошибка сохранения игры:', error);
+            console.error('Game save error:', error);
             return false;
         }
     }
@@ -30,21 +30,21 @@ export class SaveManager {
             const saveData = localStorage.getItem(saveKey);
             
             if (!saveData) {
-                console.log('Сохранение не найдено');
+                console.log('Save not found');
                 return null;
             }
 
             const gameState = JSON.parse(saveData);
             
             if (!this.validateSaveData(gameState)) {
-                console.error('Некорректные данные сохранения');
+                console.error('Invalid save data');
                 return null;
             }
 
-            console.log(`Игра загружена из слота ${slotIndex}`);
+            console.log(`Game loaded from slot ${slotIndex}`);
             return gameState;
         } catch (error) {
-            console.error('Ошибка загрузки игры:', error);
+            console.error('Game load error:', error);
             return null;
         }
     }
@@ -58,10 +58,10 @@ export class SaveManager {
         try {
             const saveKey = slotIndex === 'auto' ? this.autoSaveKey : `${this.saveKey}_${slotIndex}`;
             localStorage.removeItem(saveKey);
-            console.log(`Сохранение ${slotIndex} удалено`);
+            console.log(`Save ${slotIndex} deleted`);
             return true;
         } catch (error) {
-            console.error('Ошибка удаления сохранения:', error);
+            console.error('Save deletion error:', error);
             return false;
         }
     }
@@ -74,19 +74,19 @@ export class SaveManager {
         const requiredFields = ['time', 'character', 'inventory', 'location'];
         for (const field of requiredFields) {
             if (!gameState.hasOwnProperty(field)) {
-                console.error(`Отсутствует обязательное поле: ${field}`);
+                console.error(`Missing required field: ${field}`);
                 return false;
             }
         }
 
         if (!gameState.time.hasOwnProperty('currentHour') || 
             !gameState.time.hasOwnProperty('currentDay')) {
-            console.error('Некорректные данные времени');
+            console.error('Invalid time data');
             return false;
         }
 
         if (!gameState.character.hasOwnProperty('needs')) {
-            console.error('Отсутствуют данные потребностей персонажа');
+            console.error('Missing character needs data');
             return false;
         }
 

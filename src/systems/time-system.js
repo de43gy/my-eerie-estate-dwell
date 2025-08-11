@@ -62,7 +62,7 @@ export class TimeSystem {
             try {
                 callback(timeData);
             } catch (error) {
-                console.error('Ошибка в callback времени:', error);
+                console.error('Time callback error:', error);
             }
         });
     }
