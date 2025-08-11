@@ -10,63 +10,56 @@
 </head>
 <body>
     <div id="game-container">
-        <button
-            id="test-button" disabled onclick="handleTestClick()"
-            style="padding: 20px; font-size: 18px; margin-bottom: 20px; width: 100%; border: 2px solid red; color: red; background-color: white;">
-            LOADING...
+        <button 
+            id="test-button"
+            disabled 
+            onclick="handleTestClick()" 
+            style="padding: 20px; font-size: 18px; margin-bottom: 20px; width: 100%; border: 2px solid #999; color: #999; background-color: #ccc; cursor: not-allowed;">
+            ЗАГРУЗКА...
         </button>
 
         <div id="test-output" style="padding: 10px; border: 1px solid green; color: green; text-align: center; margin-bottom: 20px; font-weight: bold;"></div>
 
         <div id="character-status">
             <div id="time-display">День 1, 08:00 (Утро)</div>
-            <div id="needs-display">
-            </div>
+            <div id="needs-display"></div>
         </div>
-        
         <div id="location-display">
             <h2 id="location-name">Загрузка...</h2>
             <p id="location-description">Инициализация игры...</p>
         </div>
-        
         <div id="inventory-display">
             <h3>Инвентарь</h3>
             <div id="inventory-items">
                 <div class="empty-inventory">Загрузка...</div>
             </div>
         </div>
-        
         <div id="actions-menu">
             <h3>Доступные действия</h3>
             <div id="actions-list">
-                <div class="no-actions">Загрузка...</div>
+                <div class.="no-actions">Загрузка...</div>
             </div>
         </div>
-        
         <div id="navigation">
-            <div id="location-buttons">
-                
-            </div>
+            <div id="location-buttons"></div>
         </div>
-        
         <div id="message-display"></div>
     </div>
 
     <script>
-        // Simple Telegram WebApp initialization - just like in working app
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
         }
-    </script>
-    
-    <!-- Load modules -->
-    <script>
+
         function handleTestClick() {
             if (window.gameEngine) {
-            console.log("Вызов действия: examine_room");
-            window.gameEngine.processAction('examine_room');
+                console.log("Вызов действия: examine_room");
+                window.gameEngine.processAction('examine_room');
             } else {
-            alert('Игровой движок еще не инициализирован.');
+                const outputDiv = document.getElementById('test-output');
+                if (outputDiv) {
+                    outputDiv.textContent = 'ОШИБКА: Игровой движок еще не инициализирован.';
+                }
             }
         }
     </script>
