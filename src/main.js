@@ -1,6 +1,7 @@
 import { GameEngine } from './game-engine.js';
 import { TelegramAPI } from './telegram/telegram-api.js';
 import { DebugHelper } from './utils/debug-helper.js';
+import { DesktopTelegramFix } from './utils/desktop-telegram-fix.js';
 
 class App {
     constructor() {
@@ -12,6 +13,9 @@ class App {
         try {
             // Initialize debug helper first
             DebugHelper.init();
+            
+            // Apply desktop Telegram fixes if needed
+            DesktopTelegramFix.init();
             
             this.telegramAPI = new TelegramAPI();
             this.telegramAPI.init();
