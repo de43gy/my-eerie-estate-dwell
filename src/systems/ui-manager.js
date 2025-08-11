@@ -19,6 +19,43 @@ export class UIManager {
 
         this.createNeedsDisplay();
         this.setupMessageSystem();
+        this.setupEventDelegation();
+    }
+
+    setupEventDelegation() {
+        document.addEventListener('click', (event) => {
+            if (event.target.matches('.action-button') || event.target.closest('.action-button')) {
+                const button = event.target.matches('.action-button') ? 
+                    event.target : event.target.closest('.action-button');
+                
+                const actionId = button.dataset.action;
+                if (actionId && window.gameEngine) {
+                    window.gameEngine.processAction(actionId);
+                    this.triggerHapticFeedback();
+                }
+                event.preventDefault();
+            }
+
+            if (event.target.matches('.location-button') || event.target.closest('.location-button')) {
+                const button = event.target.matches('.location-button') ? 
+                    event.target : event.target.closest('.location-button');
+                
+                const locationId = button.dataset.location;
+                if (locationId && window.gameEngine) {
+                    window.gameEngine.moveToLocation(locationId);
+                    this.triggerHapticFeedback();
+                }
+                event.preventDefault();
+            }
+        });
+    }
+
+    triggerHapticFeedback() {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+            try {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+            } catch (e) {}
+        }
     }
 
     createNeedsDisplay() {
@@ -111,20 +148,6 @@ export class UIManager {
             actionButton.textContent = action.name;
             actionButton.type = 'button';
             
-            // Add direct onclick for desktop compatibility
-            actionButton.onclick = function() {
-                console.log('UIManager: Direct onclick for action:', action.id);
-                if (window.gameEngine) {
-                    window.gameEngine.processAction(action.id);
-                    // Add haptic feedback
-                    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
-                        try {
-                            window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-                        } catch (e) {}
-                    }
-                }
-            };
-            
             if (action.timeCost) {
                 const timeCost = document.createElement('span');
                 timeCost.className = 'action-time';
@@ -141,8 +164,6 @@ export class UIManager {
 
             actionsList.appendChild(actionButton);
         });
-        
-        console.log('Actions list updated with', actions.length, 'actions');
     }
 
     updateInventory(inventory) {
@@ -204,14 +225,6 @@ export class UIManager {
             locationButton.dataset.location = connection.id;
             locationButton.textContent = connection.name;
             locationButton.type = 'button';
-            
-            // Add direct onclick for desktop compatibility
-            locationButton.onclick = function() {
-                console.log('UIManager: Direct onclick for location:', connection.id);
-                if (window.gameEngine) {
-                    window.gameEngine.moveToLocation(connection.id);
-                }
-            };
             
             if (connection.state && connection.state.condition) {
                 const condition = document.createElement('span');

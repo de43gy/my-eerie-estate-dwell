@@ -18,7 +18,6 @@ class App {
             this.bindEvents();
             this.startGameLoop();
 
-            // Global reference for simple button access
             window.gameEngine = this.gameEngine;
             window.gameEngineRef = this.gameEngine;
 
@@ -30,9 +29,6 @@ class App {
     }
 
     bindEvents() {
-        // Simple delegation as fallback only if main one didn't work
-        // Remove this handler since we now have main one in index.html
-
         window.addEventListener('beforeunload', () => {
             this.gameEngine?.saveGame();
         });
