@@ -129,15 +129,39 @@ export class UIManager {
                 actionButton.appendChild(energyCost);
             }
 
-            // Add event handlers directly to the button
+            // Add event handlers directly to the button with multiple strategies
             const handleClick = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('Direct button click:', action.id);
+                
+                // Direct game engine call as backup
+                if (window.gameEngineRef) {
+                    window.gameEngineRef.processAction(action.id);
+                }
             };
             
-            actionButton.addEventListener('click', handleClick);
-            actionButton.addEventListener('touchend', handleClick);
+            // Multiple event binding approaches for maximum compatibility
+            actionButton.onclick = handleClick;
+            actionButton.addEventListener('click', handleClick, { capture: true });
+            actionButton.addEventListener('mousedown', handleClick, { capture: true });
+            actionButton.addEventListener('touchend', handleClick, { passive: false });
+            
+            // Desktop-specific enhancements
+            const isDesktop = !/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isDesktop) {
+                actionButton.setAttribute('tabindex', '0');
+                actionButton.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        handleClick(e);
+                    }
+                });
+                
+                // Force visibility and interaction
+                actionButton.style.display = 'flex';
+                actionButton.style.visibility = 'visible';
+                actionButton.style.opacity = '1';
+            }
 
             actionsList.appendChild(actionButton);
         });

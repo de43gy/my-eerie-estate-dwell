@@ -272,8 +272,19 @@ body {
     -ms-user-select: none;
     
     /* Ensure element is accessible for clicks */
-    pointer-events: auto;
+    pointer-events: auto !important;
     z-index: 10;
+    
+    /* Force interaction on desktop */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    /* Desktop-specific button fixes */
+    outline: none;
+    border: none;
+    background-clip: padding-box;
 }
 
 .action-button:hover {
@@ -344,8 +355,19 @@ body {
     -ms-user-select: none;
     
     /* Ensure element is accessible for clicks */
-    pointer-events: auto;
+    pointer-events: auto !important;
     z-index: 10;
+    
+    /* Force interaction on desktop */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    /* Desktop-specific button fixes */
+    outline: none;
+    border: none;
+    background-clip: padding-box;
 }
 
 .location-button:hover {
