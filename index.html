@@ -15,6 +15,9 @@
             style="padding: 20px; font-size: 18px; margin-bottom: 20px; width: 100%; border: 2px solid red; color: red; background-color: white;">
             TEST BUTTON
         </button>
+
+        <div id="test-output" style="padding: 10px; border: 1px solid green; color: green; text-align: center; margin-bottom: 20px; font-weight: bold;"></div>
+
         <div id="character-status">
             <div id="time-display">День 1, 08:00 (Утро)</div>
             <div id="needs-display">
@@ -57,20 +60,19 @@
     </script>
     
     <!-- Load modules -->
-    <script type="module" src="src/main.js"></script>
     <script>
         function handleTestClick() {
-            try {
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.showAlert('Тестовая кнопка РАБОТАЕТ!');
-                } else {
-                    alert('Тестовая кнопка РАБОТАЕТ!');
-                }
-            } catch (e) {
-                alert('Ошибка при вызове тестовой кнопки: ' + e.message);
+            const outputDiv = document.getElementById('test-output');
+    
+            if (outputDiv) {
+                const currentTime = new Date().toLocaleTimeString();
+                outputDiv.textContent = 'Тестовая кнопка РАБОТАЕТ! Время: ' + currentTime;
+            } else {
+                console.log('Тестовая кнопка РАБОТАЕТ!');
             }
         }
     </script>
+    
     <script type="module" src="src/main.js"></script>
 </body>
 </html>
