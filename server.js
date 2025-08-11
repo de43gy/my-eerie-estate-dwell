@@ -37,14 +37,14 @@ app.use(cors({
     credentials: true
 }));
 
-// Настройка правильных MIME типов
+// Setup correct MIME types
 express.static.mime.define({
     'application/javascript': ['js'],
     'text/css': ['css'],
     'application/json': ['json']
 });
 
-// Обслуживание статических файлов из корня проекта
+// Serve static files from project root
 app.use(express.static(path.join(__dirname), {
     maxAge: '1d',
     etag: true,
@@ -71,30 +71,30 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Обработка 404 - возвращаем index.html только для HTML запросов
+// Handle 404 - return index.html only for HTML requests
 app.use((req, res) => {
-    // Если запрашивается API endpoint, возвращаем 404
+    // If API endpoint is requested, return 404
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API endpoint not found' });
     }
     
-    // Если запрашивается статический файл (js, css, json), возвращаем 404
+    // If static file is requested (js, css, json), return 404
     if (req.path.match(/\.(js|css|json|png|jpg|ico)$/)) {
         return res.status(404).send('File not found');
     }
     
-    // Для всех остальных запросов возвращаем index.html
+    // For all other requests return index.html
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ error: 'Что-то пошло не так!' });
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
 app.listen(PORT, () => {
-    console.log(`🎮 My Eerie Estate Dwell запущен на порту ${PORT}`);
-    console.log(`📱 Telegram WebApp готов к работе`);
+    console.log(`🎮 My Eerie Estate Dwell started on port ${PORT}`);
+    console.log(`📱 Telegram WebApp ready to work`);
     console.log(`🌍 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
     console.log(`📁 Static files served from: ${__dirname}`);
 });
