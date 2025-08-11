@@ -33,8 +33,15 @@ class App {
         const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const isTelegramWebApp = window.Telegram?.WebApp;
         const isDesktop = !isMobile;
+        const isTelegramDesktop = isTelegramWebApp && isDesktop;
         
-        console.log('Platform detection:', { isMobile, isDesktop, isTelegramWebApp });
+        console.log('Platform detection:', { 
+            isMobile, 
+            isDesktop, 
+            isTelegramWebApp: !!isTelegramWebApp,
+            isTelegramDesktop,
+            userAgent: navigator.userAgent
+        });
 
         // Universal function to handle clicks/taps
         const handleInteraction = (event) => {
