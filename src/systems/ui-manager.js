@@ -24,28 +24,23 @@ export class UIManager {
 
     setupEventDelegation() {
         document.addEventListener('click', (event) => {
-            if (event.target.matches('.action-button') || event.target.closest('.action-button')) {
-                const button = event.target.matches('.action-button') ? 
-                    event.target : event.target.closest('.action-button');
-                
-                const actionId = button.dataset.action;
+            const actionButton = event.target.closest('.action-button');
+            if (actionButton) {
+                const actionId = actionButton.dataset.action;
                 if (actionId && window.gameEngine) {
                     window.gameEngine.processAction(actionId);
                     this.triggerHapticFeedback();
                 }
-                event.preventDefault();
+                return;
             }
 
-            if (event.target.matches('.location-button') || event.target.closest('.location-button')) {
-                const button = event.target.matches('.location-button') ? 
-                    event.target : event.target.closest('.location-button');
-                
-                const locationId = button.dataset.location;
+            const locationButton = event.target.closest('.location-button');
+            if (locationButton) {
+                const locationId = locationButton.dataset.location;
                 if (locationId && window.gameEngine) {
                     window.gameEngine.moveToLocation(locationId);
                     this.triggerHapticFeedback();
                 }
-                event.preventDefault();
             }
         });
     }
