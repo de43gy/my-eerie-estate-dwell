@@ -9,6 +9,12 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
+    <div id="game-container">
+        <button 
+            onclick="handleTestClick()" 
+            style="padding: 20px; font-size: 18px; margin-bottom: 20px; width: 100%; border: 2px solid red; color: red; background-color: white;">
+            TEST BUTTON
+        </button>
         <div id="character-status">
             <div id="time-display">День 1, 08:00 (Утро)</div>
             <div id="needs-display">
@@ -51,6 +57,20 @@
     </script>
     
     <!-- Load modules -->
+    <script type="module" src="src/main.js"></script>
+    <script>
+        function handleTestClick() {
+            try {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.showAlert('Тестовая кнопка РАБОТАЕТ!');
+                } else {
+                    alert('Тестовая кнопка РАБОТАЕТ!');
+                }
+            } catch (e) {
+                alert('Ошибка при вызове тестовой кнопки: ' + e.message);
+            }
+        }
+    </script>
     <script type="module" src="src/main.js"></script>
 </body>
 </html>
