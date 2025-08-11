@@ -82,6 +82,24 @@
             }
         }
         
+        // Detect if we're in desktop Telegram
+        function isDesktopTelegram() {
+            try {
+                if (!window.Telegram || !window.Telegram.WebApp) return false;
+                const platform = window.Telegram.WebApp.platform;
+                console.log('Detected platform:', platform);
+                // Desktop versions usually have platforms like 'macos', 'windows', 'linux'
+                return platform && 
+                       !platform.includes('mobile') && 
+                       !platform.includes('android') && 
+                       !platform.includes('ios') &&
+                       platform !== 'web';
+            } catch (e) {
+                console.log('Error detecting platform:', e);
+                return false;
+            }
+        }
+        
         // Simple Telegram WebApp initialization
         if (window.Telegram && window.Telegram.WebApp) {
             try {
@@ -95,6 +113,8 @@
         // Handle page load and event delegation
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, setting up event delegation');
+            console.log('Platform:', window.Telegram?.WebApp?.platform || 'web');
+            console.log('Is desktop Telegram:', isDesktopTelegram());
             
             // Universal delegation for all buttons
             document.addEventListener('click', function(e) {
@@ -125,7 +145,72 @@
                     return;
                 }
             }, false);
+            
+            // Special handling for desktop Telegram
+            if (isDesktopTelegram()) {
+                console.log('Setting up desktop Telegram fallback');
+                // Add direct event listeners to buttons when they are created
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === 1) { // Element node
+                                // Check if it's an action button
+                                if (node.classList && node.classList.contains('action-button')) {
+                                    addDirectButtonListener(node, 'action');
+                                }
+                                // Check if it's a location button
+                                if (node.classList && node.classList.contains('location-button')) {
+                                    addDirectButtonListener(node, 'location');
+                                }
+                                // Check children too
+                                const actionButtons = node.querySelectorAll && node.querySelectorAll('.action-button');
+                                const locationButtons = node.querySelectorAll && node.querySelectorAll('.location-button');
+                                
+                                if (actionButtons) {
+                                    actionButtons.forEach(btn => addDirectButtonListener(btn, 'action'));
+                                }
+                                if (locationButtons) {
+                                    locationButtons.forEach(btn => addDirectButtonListener(btn, 'location'));
+                                }
+                            }
+                        });
+                    });
+                });
+                
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+                
+                // Also add listeners to existing buttons
+                setTimeout(() => {
+                    document.querySelectorAll('.action-button').forEach(btn => {
+                        addDirectButtonListener(btn, 'action');
+                    });
+                    document.querySelectorAll('.location-button').forEach(btn => {
+                        addDirectButtonListener(btn, 'location');
+                    });
+                }, 1000);
+            }
         });
+        
+        function addDirectButtonListener(button, type) {
+            if (button._listenerAdded) return; // Prevent duplicate listeners
+            button._listenerAdded = true;
+            
+            console.log('Adding direct listener to', type, 'button:', button.dataset[type]);
+            
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('Direct button click:', type, button.dataset[type]);
+                
+                if (type === 'action') {
+                    handleActionClick(button.dataset.action);
+                } else if (type === 'location') {
+                    handleLocationClick(button.dataset.location);
+                }
+            });
+        }
     </script>
     
     <!-- Load modules only after initialization -->
