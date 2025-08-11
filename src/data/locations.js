@@ -3,7 +3,7 @@ export const LOCATIONS = {
         id: "main_room",
         name: "Главная комната",
         description: "Просторная, но запущенная комната в центре старого дома. Пыль покрывает всё вокруг, а сквозь разбитые окна пробиваются лучи света. В углу стоит старый камин, который давно не топился.",
-        actions: ["rest", "sleep", "examine_room", "test_action"],
+        actions: ["rest", "sleep", "examine_room"],
         connections: ["front_yard", "kitchen"],
         type: "indoor",
         safety: "safe"
