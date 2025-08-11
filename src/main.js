@@ -18,7 +18,8 @@ class App {
             this.bindEvents();
             this.startGameLoop();
 
-            // Global reference for direct button access
+            // Глобальная ссылка для простого доступа к кнопкам
+            window.gameEngine = this.gameEngine;
             window.gameEngineRef = this.gameEngine;
 
             console.log('Game successfully initialized');
@@ -29,37 +30,19 @@ class App {
     }
 
     bindEvents() {
+        // Простое делегирование как fallback для старых браузеров
         document.addEventListener('click', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            
-            if (e.target.classList.contains('action-button')) {
+            if (e.target.classList.contains('action-button') && e.target.dataset.action) {
                 const actionId = e.target.dataset.action;
-                console.log('Action button clicked:', actionId);
+                console.log('Fallback: Action button clicked:', actionId);
                 this.gameEngine.processAction(actionId);
                 this.telegramAPI?.hapticFeedback();
-                return false;
             }
 
-            if (e.target.classList.contains('location-button')) {
+            if (e.target.classList.contains('location-button') && e.target.dataset.location) {
                 const locationId = e.target.dataset.location;
-                console.log('Location button clicked:', locationId);
+                console.log('Fallback: Location button clicked:', locationId);
                 this.gameEngine.moveToLocation(locationId);
-                return false;
-            }
-        }, true);
-
-        document.addEventListener('touchstart', (e) => {
-            if (e.target.classList.contains('action-button') || 
-                e.target.classList.contains('location-button')) {
-                e.target.style.transform = 'scale(0.95)';
-            }
-        });
-
-        document.addEventListener('touchend', (e) => {
-            if (e.target.classList.contains('action-button') || 
-                e.target.classList.contains('location-button')) {
-                e.target.style.transform = 'scale(1)';
             }
         });
 

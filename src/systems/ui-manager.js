@@ -110,6 +110,7 @@ export class UIManager {
             actionButton.dataset.action = action.id;
             actionButton.textContent = action.name;
             actionButton.type = 'button';
+            actionButton.onclick = () => handleActionClick(action.id);
             
             if (action.timeCost) {
                 const timeCost = document.createElement('span');
@@ -190,6 +191,7 @@ export class UIManager {
             locationButton.dataset.location = connection.id;
             locationButton.textContent = connection.name;
             locationButton.type = 'button';
+            locationButton.onclick = () => handleLocationClick(connection.id);
             
             if (connection.state && connection.state.condition) {
                 const condition = document.createElement('span');

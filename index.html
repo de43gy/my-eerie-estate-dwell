@@ -47,11 +47,67 @@
             </div>
         </div>
         
+        <!-- Тестовая кнопка для проверки -->
+        <div style="padding: 20px; text-align: center; background: rgba(255,0,0,0.1); margin: 10px; border-radius: 8px;">
+            <button onclick="alert('Тестовая кнопка работает!')" style="padding: 15px 30px; font-size: 16px; border: none; background: #ff6b6b; color: white; border-radius: 8px; cursor: pointer;">
+                🔴 ТЕСТ КНОПКИ
+            </button>
+            <br><br>
+            <button onclick="handleActionClick('test_action')" style="padding: 15px 30px; font-size: 16px; border: none; background: #2481cc; color: white; border-radius: 8px; cursor: pointer;">
+                🎮 ТЕСТ ИГРОВОЙ КНОПКИ
+            </button>
+        </div>
+        
         <!-- Сообщения -->
         <div id="message-display"></div>
     </div>
 
-    <!-- Загрузка модулей -->
+    <!-- Простая загрузка без модулей -->
+    <script>
+        // Простые глобальные функции для обработки кликов
+        function handleActionClick(actionId) {
+            console.log('Global: Action clicked:', actionId);
+            if (window.gameEngine) {
+                window.gameEngine.processAction(actionId);
+                // Добавляем тактильную обратную связь
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                    try {
+                        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+                    } catch (e) {
+                        console.log('Haptic feedback not available');
+                    }
+                }
+            } else {
+                console.log('Game engine not ready yet');
+            }
+        }
+        
+        function handleLocationClick(locationId) {
+            console.log('Global: Location clicked:', locationId);
+            if (window.gameEngine) {
+                window.gameEngine.moveToLocation(locationId);
+            } else {
+                console.log('Game engine not ready yet');
+            }
+        }
+        
+        // Простая инициализация Telegram WebApp
+        if (window.Telegram && window.Telegram.WebApp) {
+            try {
+                window.Telegram.WebApp.ready();
+                console.log('Telegram WebApp ready called');
+            } catch (e) {
+                console.log('Telegram WebApp not available');
+            }
+        }
+        
+        // Обработка загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, preparing for game initialization');
+        });
+    </script>
+    
+    <!-- Загрузка модулей только после инициализации -->
     <script type="module" src="src/main.js"></script>
 </body>
 </html>
