@@ -49,11 +49,11 @@
         
         <!-- Тестовая кнопка для проверки -->
         <div style="padding: 20px; text-align: center; background: rgba(255,0,0,0.1); margin: 10px; border-radius: 8px;">
-            <button onclick="alert('Тестовая кнопка работает!')" style="padding: 15px 30px; font-size: 16px; border: none; background: #ff6b6b; color: white; border-radius: 8px; cursor: pointer;">
+            <button id="test-button" style="padding: 15px 30px; font-size: 16px; border: none; background: #ff6b6b; color: white; border-radius: 8px; cursor: pointer;">
                 🔴 ТЕСТ КНОПКИ
             </button>
             <br><br>
-            <button onclick="handleActionClick('test_action')" style="padding: 15px 30px; font-size: 16px; border: none; background: #2481cc; color: white; border-radius: 8px; cursor: pointer;">
+            <button id="test-game-button" style="padding: 15px 30px; font-size: 16px; border: none; background: #2481cc; color: white; border-radius: 8px; cursor: pointer;">
                 🎮 ТЕСТ ИГРОВОЙ КНОПКИ
             </button>
         </div>
@@ -91,6 +91,12 @@
             }
         }
         
+        // Функция для тестирования
+        function testButtonClick() {
+            alert('Тестовая кнопка работает!');
+            console.log('Test button clicked successfully!');
+        }
+        
         // Простая инициализация Telegram WebApp
         if (window.Telegram && window.Telegram.WebApp) {
             try {
@@ -101,9 +107,44 @@
             }
         }
         
-        // Обработка загрузки страницы
+        // Обработка загрузки страницы и делегирование событий
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, preparing for game initialization');
+            console.log('DOM loaded, setting up event delegation');
+            
+            // Универсальное делегирование для всех кнопок
+            document.addEventListener('click', function(e) {
+                console.log('Click detected on:', e.target.className, e.target.tagName);
+                
+                // Обработка тестовых кнопок
+                if (e.target.id === 'test-button') {
+                    testButtonClick();
+                    return;
+                }
+                
+                if (e.target.id === 'test-game-button') {
+                    handleActionClick('test_action');
+                    return;
+                }
+                
+                // Обработка игровых кнопок
+                if (e.target.classList.contains('action-button')) {
+                    const actionId = e.target.dataset.action;
+                    if (actionId) {
+                        console.log('Action button clicked via delegation:', actionId);
+                        handleActionClick(actionId);
+                    }
+                    return;
+                }
+                
+                if (e.target.classList.contains('location-button')) {
+                    const locationId = e.target.dataset.location;
+                    if (locationId) {
+                        console.log('Location button clicked via delegation:', locationId);
+                        handleLocationClick(locationId);
+                    }
+                    return;
+                }
+            }, false);
         });
     </script>
     

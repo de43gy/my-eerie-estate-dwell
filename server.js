@@ -17,8 +17,10 @@ app.use(helmet({
                 "'self'", 
                 "'unsafe-inline'",
                 "'unsafe-eval'",
+                "'unsafe-hashes'",
                 "https://telegram.org"
             ],
+            "script-src-attr": ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "https:"],
             connectSrc: ["'self'", "https://telegram.org"],
