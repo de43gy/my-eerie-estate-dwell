@@ -76,12 +76,6 @@
     opacity: 1;
     pointer-events: auto;
     
-    /* Prevent text selection */
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    
     /* Mobile optimizations */
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
