@@ -2,11 +2,31 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>My Eerie Estate Dwell</title>
     <meta name="description" content="Пошаговая игра на выживание в загадочном доме">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="stylesheet" href="src/styles/main.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* Critical inline styles for immediate rendering */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Ensure buttons are immediately clickable */
+        button {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
 </head>
 <body>
     <div id="game-container">
@@ -37,8 +57,25 @@
     </div>
 
     <script>
+        // Initialize Telegram WebApp immediately
         if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            
+            // Log platform info
+            console.log('Telegram Platform:', tg.platform);
+            console.log('Telegram Version:', tg.version);
+            
+            // Set header color
+            if (tg.setHeaderColor) {
+                tg.setHeaderColor('#bg_color');
+            }
+            
+            // Enable closing confirmation
+            if (tg.enableClosingConfirmation) {
+                tg.enableClosingConfirmation();
+            }
         }
     </script>
     

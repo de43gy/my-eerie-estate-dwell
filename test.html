@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Test - My Eerie Estate Dwell</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #2481cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .test-button:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+        
+        #log {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        #platform-info {
+            background: #e0e0e0;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тест кнопок</h1>
+    
+    <div id="platform-info">
+        <div>Platform: <span id="platform">Unknown</span></div>
+        <div>Version: <span id="version">Unknown</span></div>
+        <div>User Agent: <span id="user-agent" style="font-size: 10px; word-break: break-all;"></span></div>
+    </div>
+    
+    <button class="test-button" onclick="testClick(this, 'onclick')">Test onclick</button>
+    <button class="test-button" id="btn-listener">Test addEventListener</button>
+    <button class="test-button" id="btn-touch">Test touch events</button>
+    <button class="test-button" id="btn-pointer">Test pointer events</button>
+    <button class="test-button" id="btn-all">Test all events</button>
+    
+    <div id="log">
+        <div class="log-entry">Лог событий:</div>
+    </div>
+    
+    <script>
+        // Platform detection
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            document.getElementById('platform').textContent = tg.platform || 'Unknown';
+            document.getElementById('version').textContent = tg.version || 'Unknown';
+        }
+        document.getElementById('user-agent').textContent = navigator.userAgent;
+        
+        // Logging function
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            // Haptic feedback
+            if (tg?.HapticFeedback) {
+                try {
+                    tg.HapticFeedback.impactOccurred('light');
+                } catch (e) {}
+            }
+        }
+        
+        // Test functions
+        function testClick(button, method) {
+            log(`Button clicked via ${method}: ${button.textContent}`);
+        }
+        
+        // addEventListener test
+        document.getElementById('btn-listener').addEventListener('click', function(e) {
+            log('addEventListener click: ' + this.textContent);
+        });
+        
+        // Touch events test
+        const btnTouch = document.getElementById('btn-touch');
+        btnTouch.addEventListener('touchstart', function(e) {
+            log('touchstart event');
+            e.preventDefault();
+        }, { passive: false });
+        
+        btnTouch.addEventListener('touchend', function(e) {
+            log('touchend event');
+            e.preventDefault();
+        }, { passive: false });
+        
+        btnTouch.addEventListener('click', function(e) {
+            log('click after touch');
+        });
+        
+        // Pointer events test
+        const btnPointer = document.getElementById('btn-pointer');
+        if (window.PointerEvent) {
+            btnPointer.addEventListener('pointerdown', function(e) {
+                log(`pointerdown: ${e.pointerType}`);
+            });
+            
+            btnPointer.addEventListener('pointerup', function(e) {
+                log(`pointerup: ${e.pointerType}`);
+            });
+        } else {
+            btnPointer.textContent = 'Pointer events not supported';
+        }
+        
+        btnPointer.addEventListener('click', function(e) {
+            log('click after pointer');
+        });
+        
+        // All events test
+        const btnAll = document.getElementById('btn-all');
+        ['mousedown', 'mouseup', 'touchstart', 'touchend', 'pointerdown', 'pointerup', 'click'].forEach(eventType => {
+            btnAll.addEventListener(eventType, function(e) {
+                log(`${eventType} fired`);
+                if (eventType.includes('touch')) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        });
+        
+        // Log initial state
+        log('Test page loaded');
+        log(`Platform: ${tg?.platform || 'Not in Telegram'}`);
+    </script>
+</body>
+</html>

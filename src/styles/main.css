@@ -79,6 +79,9 @@
     /* Mobile optimizations */
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
     
     /* Proper positioning */
     position: relative;
@@ -89,6 +92,11 @@
     
     /* Minimum touch target */
     min-height: 44px;
+    
+    /* Desktop Telegram WebView fix */
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
 }
 
 .action-button {
@@ -102,11 +110,19 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     outline: none;
+    opacity: 0.9;
 }
 
 .action-button:active {
     transform: translateY(0) scale(0.98);
     transition: transform 0.1s ease;
+    opacity: 0.8;
+}
+
+.action-button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .location-button {
@@ -121,11 +137,19 @@
     background: var(--tg-theme-button-color);
     color: var(--tg-theme-button-text-color);
     outline: none;
+    opacity: 0.9;
 }
 
 .location-button:active {
     transform: scale(0.98);
     transition: transform 0.1s ease;
+    opacity: 0.8;
+}
+
+.location-button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 * {
@@ -445,4 +469,95 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Desktop Telegram specific fixes */
+.telegram-desktop {
+    height: calc(var(--vh, 1vh) * 100);
+}
+
+.telegram-desktop .action-button,
+.telegram-desktop .location-button {
+    /* Force hardware acceleration */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    
+    /* Ensure clickability */
+    position: relative;
+    z-index: 10;
+}
+
+.telegram-desktop .action-button::before,
+.telegram-desktop .location-button::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    z-index: -1;
+}
+
+/* Fix for desktop hover states */
+@media (hover: hover) and (pointer: fine) {
+    .action-button:hover,
+    .location-button:hover {
+        filter: brightness(1.1);
+    }
+    
+    .action-button:active,
+    .location-button:active {
+        filter: brightness(0.9);
+    }
+}
+
+/* Ensure buttons work in all WebView contexts */
+button {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+}
+
+/* Pointer events support */
+@supports (pointer-events: auto) {
+    .action-button,
+    .location-button {
+        pointer-events: auto !important;
+    }
+    
+    .action-button[disabled],
+    .location-button[disabled] {
+        pointer-events: none !important;
+    }
+}
+
+/* Additional desktop fixes */
+.telegram-desktop button {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
+
+/* Ensure proper stacking context */
+#actions-menu,
+#navigation {
+    position: relative;
+    z-index: 100;
+}
+
+#actions-list,
+#location-buttons {
+    position: relative;
+    z-index: 101;
+}
+
+/* Force GPU acceleration for smoother interactions */
+.action-button,
+.location-button {
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
 }

@@ -15,16 +15,52 @@ export class TelegramAPI {
             this.tg.ready();
             this.tg.expand();
             
+            // Enable confirmation on close
+            this.tg.enableClosingConfirmation();
+            
+            // Set viewport settings
+            if (this.tg.setHeaderColor) {
+                this.tg.setHeaderColor('#bg_color');
+            }
+            
             this.user = this.tg.initDataUnsafe?.user;
             
             this.setupTheme();
             this.setupBackButton();
             this.setupMainButton();
             
+            // Desktop-specific fixes
+            this.applyDesktopFixes();
+            
             console.log('Telegram WebApp initialized');
+            console.log('Platform:', this.tg.platform);
+            console.log('Version:', this.tg.version);
             console.log('User:', this.user);
         } catch (error) {
             console.error('Telegram WebApp initialization error:', error);
+        }
+    }
+    
+    applyDesktopFixes() {
+        if (!this.isAvailable) return;
+        
+        // Check if running on desktop
+        const isDesktop = this.tg.platform === 'tdesktop' || 
+                         this.tg.platform === 'web' ||
+                         this.tg.platform === 'weba';
+        
+        if (isDesktop) {
+            // Add desktop-specific class
+            document.body.classList.add('telegram-desktop');
+            
+            // Fix viewport height for desktop
+            const fixViewportHeight = () => {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            };
+            
+            fixViewportHeight();
+            window.addEventListener('resize', fixViewportHeight);
         }
     }
 

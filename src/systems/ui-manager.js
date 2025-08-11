@@ -1,3 +1,5 @@
+import { EventHelper } from '../utils/event-helper.js';
+
 export class UIManager {
     constructor() {
         this.elements = {};
@@ -23,24 +25,69 @@ export class UIManager {
     }
 
     setupEventDelegation() {
-        document.addEventListener('click', (event) => {
+        // Track last interaction to prevent double-firing
+        let lastInteraction = 0;
+        const DEBOUNCE_TIME = 300;
+        
+        // Handle button interactions
+        const handleButtonInteraction = (event) => {
+            // Debounce rapid clicks
+            const now = Date.now();
+            if (now - lastInteraction < DEBOUNCE_TIME) {
+                event.preventDefault();
+                return;
+            }
+            lastInteraction = now;
+            
             const actionButton = event.target.closest('.action-button');
-            if (actionButton) {
+            if (actionButton && !actionButton.disabled) {
+                event.preventDefault();
+                event.stopPropagation();
                 const actionId = actionButton.dataset.action;
                 if (actionId && window.gameEngine) {
                     window.gameEngine.processAction(actionId);
                     this.triggerHapticFeedback();
+                    this.animateButtonPress(actionButton);
                 }
-                return;
+                return false;
             }
 
             const locationButton = event.target.closest('.location-button');
-            if (locationButton) {
+            if (locationButton && !locationButton.disabled) {
+                event.preventDefault();
+                event.stopPropagation();
                 const locationId = locationButton.dataset.location;
                 if (locationId && window.gameEngine) {
                     window.gameEngine.moveToLocation(locationId);
                     this.triggerHapticFeedback();
+                    this.animateButtonPress(locationButton);
                 }
+                return false;
+            }
+        };
+
+        // Multiple event listeners for better compatibility
+        ['click', 'touchend', 'mouseup'].forEach(eventType => {
+            document.addEventListener(eventType, handleButtonInteraction, { 
+                passive: false, 
+                capture: true 
+            });
+        });
+        
+        // Prevent default touch behaviors
+        document.addEventListener('touchstart', (event) => {
+            const button = event.target.closest('.action-button, .location-button');
+            if (button) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Prevent context menu on long press
+        document.addEventListener('contextmenu', (event) => {
+            const button = event.target.closest('.action-button, .location-button');
+            if (button) {
+                event.preventDefault();
+                return false;
             }
         });
     }
@@ -51,6 +98,13 @@ export class UIManager {
                 window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
             } catch (e) {}
         }
+    }
+    
+    animateButtonPress(button) {
+        button.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            button.style.transform = '';
+        }, 100);
     }
 
     createNeedsDisplay() {
@@ -142,6 +196,21 @@ export class UIManager {
             actionButton.dataset.action = action.id;
             actionButton.textContent = action.name;
             actionButton.type = 'button';
+            actionButton.setAttribute('role', 'button');
+            actionButton.setAttribute('tabindex', '0');
+            
+            // Bind events using helper for better compatibility
+            EventHelper.bindButtonEvents(actionButton, (e) => {
+                e.preventDefault();
+                if (!actionButton.disabled && window.gameEngine) {
+                    window.gameEngine.processAction(action.id);
+                    this.triggerHapticFeedback();
+                    this.animateButtonPress(actionButton);
+                }
+            });
+            
+            // Prevent default behaviors
+            EventHelper.preventDefaultBehaviors(actionButton);
             
             if (action.timeCost) {
                 const timeCost = document.createElement('span');
@@ -220,6 +289,21 @@ export class UIManager {
             locationButton.dataset.location = connection.id;
             locationButton.textContent = connection.name;
             locationButton.type = 'button';
+            locationButton.setAttribute('role', 'button');
+            locationButton.setAttribute('tabindex', '0');
+            
+            // Bind events using helper for better compatibility
+            EventHelper.bindButtonEvents(locationButton, (e) => {
+                e.preventDefault();
+                if (!locationButton.disabled && window.gameEngine) {
+                    window.gameEngine.moveToLocation(connection.id);
+                    this.triggerHapticFeedback();
+                    this.animateButtonPress(locationButton);
+                }
+            });
+            
+            // Prevent default behaviors
+            EventHelper.preventDefaultBehaviors(locationButton);
             
             if (connection.state && connection.state.condition) {
                 const condition = document.createElement('span');

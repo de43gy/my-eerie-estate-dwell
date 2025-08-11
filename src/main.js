@@ -1,5 +1,6 @@
 import { GameEngine } from './game-engine.js';
 import { TelegramAPI } from './telegram/telegram-api.js';
+import { DebugHelper } from './utils/debug-helper.js';
 
 class App {
     constructor() {
@@ -9,6 +10,9 @@ class App {
 
     async init() {
         try {
+            // Initialize debug helper first
+            DebugHelper.init();
+            
             this.telegramAPI = new TelegramAPI();
             this.telegramAPI.init();
 
