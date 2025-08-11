@@ -7,7 +7,7 @@ export class TelegramAPI {
 
     init() {
         if (!this.isAvailable) {
-            console.log('Telegram WebApp API недоступен, используется обычный режим');
+            console.log('Telegram WebApp API not available, using normal mode');
             return;
         }
 
@@ -21,10 +21,10 @@ export class TelegramAPI {
             this.setupBackButton();
             this.setupMainButton();
             
-            console.log('Telegram WebApp инициализирован');
-            console.log('Пользователь:', this.user);
+            console.log('Telegram WebApp initialized');
+            console.log('User:', this.user);
         } catch (error) {
-            console.error('Ошибка инициализации Telegram WebApp:', error);
+            console.error('Telegram WebApp initialization error:', error);
         }
     }
 
@@ -33,14 +33,14 @@ export class TelegramAPI {
 
         const root = document.documentElement;
         
-        // Определяем тему на основе цвета фона
+        // Determine theme based on background color
         const bgColor = this.tg.backgroundColor || '#ffffff';
         const isDark = this.isColorDark(bgColor);
         
-        // Устанавливаем атрибут темы
+        // Set theme attribute
         document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
         
-        // Устанавливаем CSS переменные из Telegram
+        // Set CSS variables from Telegram
         root.style.setProperty('--tg-theme-bg-color', this.tg.backgroundColor || '#ffffff');
         root.style.setProperty('--tg-theme-text-color', this.tg.textColor || '#000000');
         root.style.setProperty('--tg-theme-hint-color', this.tg.hintColor || '#999999');
@@ -52,17 +52,17 @@ export class TelegramAPI {
         document.body.style.backgroundColor = this.tg.backgroundColor || '#ffffff';
         document.body.style.color = this.tg.textColor || '#000000';
         
-        console.log(`Тема установлена: ${isDark ? 'темная' : 'светлая'}`);
+        console.log(`Theme set: ${isDark ? 'dark' : 'light'}`);
     }
     
     isColorDark(color) {
-        // Конвертируем цвет в RGB и определяем яркость
+        // Convert color to RGB and determine brightness
         const hex = color.replace('#', '');
         const r = parseInt(hex.substr(0, 2), 16);
         const g = parseInt(hex.substr(2, 2), 16);
         const b = parseInt(hex.substr(4, 2), 16);
         
-        // Формула для определения яркости
+        // Formula for determining brightness
         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
         return brightness < 128;
     }
@@ -121,7 +121,7 @@ export class TelegramAPI {
                     this.tg.HapticFeedback.impactOccurred('medium');
             }
         } catch (error) {
-            console.warn('Ошибка haptic feedback:', error);
+            console.warn('Haptic feedback error:', error);
         }
     }
 

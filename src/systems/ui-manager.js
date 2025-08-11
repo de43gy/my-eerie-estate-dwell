@@ -110,6 +110,11 @@ export class UIManager {
             actionButton.dataset.action = action.id;
             actionButton.textContent = action.name;
             
+            // Add additional debug information
+            actionButton.setAttribute('data-debug', `action-${action.id}`);
+            actionButton.style.position = 'relative';
+            actionButton.style.zIndex = '10';
+            
             if (action.timeCost) {
                 const timeCost = document.createElement('span');
                 timeCost.className = 'action-time';
@@ -124,8 +129,20 @@ export class UIManager {
                 actionButton.appendChild(energyCost);
             }
 
+            // Add event handlers directly to the button
+            const handleClick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Direct button click:', action.id);
+            };
+            
+            actionButton.addEventListener('click', handleClick);
+            actionButton.addEventListener('touchend', handleClick);
+
             actionsList.appendChild(actionButton);
         });
+        
+        console.log('Actions list updated with', actions.length, 'actions');
     }
 
     updateInventory(inventory) {

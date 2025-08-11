@@ -19,7 +19,7 @@
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
     
-    /* Светлая тема - дополнительные переменные */
+    /* Light theme - additional variables */
     --bg-primary: rgba(255, 255, 255, 0.95);
     --bg-secondary: rgba(0, 0, 0, 0.05);
     --bg-tertiary: rgba(0, 0, 0, 0.03);
@@ -28,7 +28,7 @@
     --border-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Темная тема */
+/* Dark theme */
 [data-theme="dark"], .dark-theme {
     --tg-theme-bg-color: #17212b;
     --tg-theme-text-color: #ffffff;
@@ -47,7 +47,7 @@
     
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     
-    /* Темная тема - дополнительные переменные */
+    /* Dark theme - additional variables */
     --bg-primary: rgba(35, 46, 60, 0.95);
     --bg-secondary: rgba(255, 255, 255, 0.08);
     --bg-tertiary: rgba(255, 255, 255, 0.04);
@@ -261,6 +261,19 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    
+    /* Enhanced touch event support */
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    
+    /* Ensure element is accessible for clicks */
+    pointer-events: auto;
+    z-index: 10;
 }
 
 .action-button:hover {
@@ -320,6 +333,19 @@ body {
     cursor: pointer;
     transition: var(--transition);
     text-align: left;
+    
+    /* Enhanced touch event support */
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    
+    /* Ensure element is accessible for clicks */
+    pointer-events: auto;
+    z-index: 10;
 }
 
 .location-button:hover {

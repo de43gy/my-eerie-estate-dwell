@@ -35,7 +35,7 @@ export class CharacterManager {
 
     modifyNeed(needType, amount) {
         if (!this.needs.hasOwnProperty(needType)) {
-            console.error('Неизвестная потребность:', needType);
+            console.error('Unknown need type:', needType);
             return;
         }
         

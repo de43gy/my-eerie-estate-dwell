@@ -31,9 +31,9 @@ export class GameEngine {
             }
             
             this.isInitialized = true;
-            console.log('GameEngine инициализирован');
+            console.log('GameEngine initialized');
         } catch (error) {
-            console.error('Ошибка инициализации GameEngine:', error);
+            console.error('GameEngine initialization error:', error);
             throw error;
         }
     }
@@ -82,7 +82,7 @@ export class GameEngine {
 
         const action = this.gameData.actions[actionId];
         if (!action) {
-            console.error('Неизвестное действие:', actionId);
+            console.error('Unknown action:', actionId);
             return;
         }
 
@@ -260,6 +260,6 @@ export class GameEngine {
 
     autoSave() {
         this.saveGame();
-        console.log('Автосохранение выполнено');
+        console.log('Auto-save completed');
     }
 }

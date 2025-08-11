@@ -18,26 +18,51 @@ class App {
             this.bindEvents();
             this.startGameLoop();
 
-            console.log('Игра успешно инициализирована');
+            console.log('Game successfully initialized');
         } catch (error) {
-            console.error('Ошибка инициализации игры:', error);
+            console.error('Game initialization error:', error);
             this.showError('Ошибка загрузки игры');
         }
     }
 
     bindEvents() {
-        document.addEventListener('click', (event) => {
+        // Universal function to handle clicks/taps
+        const handleInteraction = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
             if (event.target.classList.contains('action-button')) {
                 const actionId = event.target.dataset.action;
+                console.log('Action triggered:', actionId);
                 this.gameEngine.processAction(actionId);
                 this.telegramAPI?.hapticFeedback();
             }
 
             if (event.target.classList.contains('location-button')) {
                 const locationId = event.target.dataset.location;
+                console.log('Location triggered:', locationId);
                 this.gameEngine.moveToLocation(locationId);
             }
-        });
+        };
+
+        // Add support for different event types
+        document.addEventListener('click', handleInteraction, true);
+        document.addEventListener('touchend', handleInteraction, true);
+        document.addEventListener('mousedown', handleInteraction, true);
+
+        // Additionally bind events to containers
+        const actionsContainer = document.getElementById('actions-list');
+        const locationsContainer = document.getElementById('location-buttons');
+
+        if (actionsContainer) {
+            actionsContainer.addEventListener('click', handleInteraction, true);
+            actionsContainer.addEventListener('touchend', handleInteraction, true);
+        }
+
+        if (locationsContainer) {
+            locationsContainer.addEventListener('click', handleInteraction, true);
+            locationsContainer.addEventListener('touchend', handleInteraction, true);
+        }
 
         window.addEventListener('beforeunload', () => {
             this.gameEngine?.saveGame();
