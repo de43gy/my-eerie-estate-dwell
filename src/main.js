@@ -18,7 +18,7 @@ class App {
             this.bindEvents();
             this.startGameLoop();
 
-            // Глобальная ссылка для простого доступа к кнопкам
+            // Global reference for simple button access
             window.gameEngine = this.gameEngine;
             window.gameEngineRef = this.gameEngine;
 
@@ -30,21 +30,8 @@ class App {
     }
 
     bindEvents() {
-        // Простое делегирование как fallback для старых браузеров
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('action-button') && e.target.dataset.action) {
-                const actionId = e.target.dataset.action;
-                console.log('Fallback: Action button clicked:', actionId);
-                this.gameEngine.processAction(actionId);
-                this.telegramAPI?.hapticFeedback();
-            }
-
-            if (e.target.classList.contains('location-button') && e.target.dataset.location) {
-                const locationId = e.target.dataset.location;
-                console.log('Fallback: Location button clicked:', locationId);
-                this.gameEngine.moveToLocation(locationId);
-            }
-        });
+        // Simple delegation as fallback only if main one didn't work
+        // Remove this handler since we now have main one in index.html
 
         window.addEventListener('beforeunload', () => {
             this.gameEngine?.saveGame();

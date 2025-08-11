@@ -16,6 +16,7 @@ export class GameEngine {
         
         this.isInitialized = false;
         this.lastUpdateTime = 0;
+        this.lastRenderTime = 0;
     }
 
     async init() {
@@ -211,6 +212,13 @@ export class GameEngine {
 
     render() {
         if (!this.isInitialized) return;
+
+        // Add throttling for render
+        const now = Date.now();
+        if (now - this.lastRenderTime < 1000) { // Render no more than once per second
+            return;
+        }
+        this.lastRenderTime = now;
 
         this.uiManager.updateTimeDisplay(this.timeSystem.getTimeString());
         this.uiManager.updateCharacterStats(this.characterManager.needs);

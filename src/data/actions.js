@@ -1,4 +1,17 @@
 export const ACTIONS = {
+    // Test action for checking
+    test_action: {
+        id: "test_action",
+        name: "🎮 Тестовое действие",
+        description: "Проверка работы кнопок",
+        timeCost: 0,
+        energyCost: 0,
+        anyLocation: true,
+        results: {
+            energy: 1
+        }
+    },
+
     collect_wood: {
         id: "collect_wood",
         name: "Собрать дрова",

@@ -47,34 +47,25 @@
             </div>
         </div>
         
-        <!-- Тестовая кнопка для проверки -->
-        <div style="padding: 20px; text-align: center; background: rgba(255,0,0,0.1); margin: 10px; border-radius: 8px;">
-            <button id="test-button" style="padding: 15px 30px; font-size: 16px; border: none; background: #ff6b6b; color: white; border-radius: 8px; cursor: pointer;">
-                🔴 ТЕСТ КНОПКИ
-            </button>
-            <br><br>
-            <button id="test-game-button" style="padding: 15px 30px; font-size: 16px; border: none; background: #2481cc; color: white; border-radius: 8px; cursor: pointer;">
-                🎮 ТЕСТ ИГРОВОЙ КНОПКИ
-            </button>
-        </div>
-        
         <!-- Сообщения -->
         <div id="message-display"></div>
     </div>
 
-    <!-- Простая загрузка без модулей -->
+    <!-- Simple loading without modules -->
     <script>
-        // Простые глобальные функции для обработки кликов
+        // Simple global functions for click handling
         function handleActionClick(actionId) {
             console.log('Global: Action clicked:', actionId);
             if (window.gameEngine) {
                 window.gameEngine.processAction(actionId);
-                // Добавляем тактильную обратную связь
+                // Show successful execution message
+                console.log('Действие', actionId, 'выполнено успешно!');
+                // Add haptic feedback
                 if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
                     try {
                         window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
                     } catch (e) {
-                        console.log('Haptic feedback not available');
+                        console.log('Haptic feedback not available:', e.message);
                     }
                 }
             } else {
@@ -91,13 +82,7 @@
             }
         }
         
-        // Функция для тестирования
-        function testButtonClick() {
-            alert('Тестовая кнопка работает!');
-            console.log('Test button clicked successfully!');
-        }
-        
-        // Простая инициализация Telegram WebApp
+        // Simple Telegram WebApp initialization
         if (window.Telegram && window.Telegram.WebApp) {
             try {
                 window.Telegram.WebApp.ready();
@@ -107,40 +92,35 @@
             }
         }
         
-        // Обработка загрузки страницы и делегирование событий
+        // Handle page load and event delegation
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, setting up event delegation');
             
-            // Универсальное делегирование для всех кнопок
+            // Universal delegation for all buttons
             document.addEventListener('click', function(e) {
-                console.log('Click detected on:', e.target.className, e.target.tagName);
+                console.log('Click detected on:', e.target.className, e.target.tagName, 'ID:', e.target.id);
                 
-                // Обработка тестовых кнопок
-                if (e.target.id === 'test-button') {
-                    testButtonClick();
-                    return;
-                }
-                
-                if (e.target.id === 'test-game-button') {
-                    handleActionClick('test_action');
-                    return;
-                }
-                
-                // Обработка игровых кнопок
+                // Handle game buttons
                 if (e.target.classList.contains('action-button')) {
                     const actionId = e.target.dataset.action;
+                    console.log('Action button detected:', actionId);
                     if (actionId) {
                         console.log('Action button clicked via delegation:', actionId);
                         handleActionClick(actionId);
+                    } else {
+                        console.log('Action button has no action ID!');
                     }
                     return;
                 }
                 
                 if (e.target.classList.contains('location-button')) {
                     const locationId = e.target.dataset.location;
+                    console.log('Location button detected:', locationId);
                     if (locationId) {
                         console.log('Location button clicked via delegation:', locationId);
                         handleLocationClick(locationId);
+                    } else {
+                        console.log('Location button has no location ID!');
                     }
                     return;
                 }
@@ -148,7 +128,7 @@
         });
     </script>
     
-    <!-- Загрузка модулей только после инициализации -->
+    <!-- Load modules only after initialization -->
     <script type="module" src="src/main.js"></script>
 </body>
 </html>
