@@ -29,21 +29,37 @@ class App {
     }
 
     bindEvents() {
-        // SIMPLE: Just basic event handling like in working app
         document.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            
             if (e.target.classList.contains('action-button')) {
                 const actionId = e.target.dataset.action;
                 console.log('Action button clicked:', actionId);
                 this.gameEngine.processAction(actionId);
                 this.telegramAPI?.hapticFeedback();
-                return;
+                return false;
             }
 
             if (e.target.classList.contains('location-button')) {
                 const locationId = e.target.dataset.location;
                 console.log('Location button clicked:', locationId);
                 this.gameEngine.moveToLocation(locationId);
-                return;
+                return false;
+            }
+        }, true);
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.classList.contains('action-button') || 
+                e.target.classList.contains('location-button')) {
+                e.target.style.transform = 'scale(0.95)';
+            }
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (e.target.classList.contains('action-button') || 
+                e.target.classList.contains('location-button')) {
+                e.target.style.transform = 'scale(1)';
             }
         });
 

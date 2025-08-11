@@ -109,14 +109,7 @@ export class UIManager {
             actionButton.className = 'action-button';
             actionButton.dataset.action = action.id;
             actionButton.textContent = action.name;
-            
-            // SIMPLE: Just like in working app - direct onclick
-            actionButton.onclick = () => {
-                console.log('Action button clicked:', action.id);
-                if (window.gameEngineRef) {
-                    window.gameEngineRef.processAction(action.id);
-                }
-            };
+            actionButton.type = 'button';
             
             if (action.timeCost) {
                 const timeCost = document.createElement('span');
@@ -196,14 +189,7 @@ export class UIManager {
             locationButton.className = 'location-button';
             locationButton.dataset.location = connection.id;
             locationButton.textContent = connection.name;
-            
-            // SIMPLE: Just like in working app - direct onclick
-            locationButton.onclick = () => {
-                console.log('Location button clicked:', connection.id);
-                if (window.gameEngineRef) {
-                    window.gameEngineRef.moveToLocation(connection.id);
-                }
-            };
+            locationButton.type = 'button';
             
             if (connection.state && connection.state.condition) {
                 const condition = document.createElement('span');
