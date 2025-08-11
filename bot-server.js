@@ -4,8 +4,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Замените на ваш токен бота
-const BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+const BOT_TOKEN = '8316154675:AAGDTSUtW0Ysrg5dEbxn5S5GnAr0cgqwIPc';
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
 // Serve static files
@@ -18,8 +17,12 @@ bot.onText(/\/start/, (msg) => {
     const keyboard = {
         inline_keyboard: [
             [{
-                text: '🧪 Открыть тест кнопок',
+                text: '🧪 Открыть тест простых кнопок',
                 web_app: { url: `http://localhost:${PORT}/simple-test.html` }
+            }],
+            [{
+                text: '🧪 Открыть тест сложных кнопок',
+                web_app: { url: `http://localhost:${PORT}/test-buttons.html` }
             }],
             [{
                 text: '🎮 Открыть игру',
