@@ -21,6 +21,16 @@ class App {
             window.gameEngine = this.gameEngine;
             window.gameEngineRef = this.gameEngine;
 
+            const testButton = document.getElementById('test-button');
+            if (testButton) {
+                testButton.disabled = false;
+                testButton.textContent = 'TEST BUTTON';
+                testButton.style.borderColor = 'red';
+                testButton.style.color = 'red';
+                testButton.style.backgroundColor = 'white';
+                testButton.style.cursor = 'pointer';
+            }
+
             console.log('Game successfully initialized');
         } catch (error) {
             console.error('Game initialization error:', error);
