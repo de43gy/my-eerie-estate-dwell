@@ -1,16 +1,37 @@
 import { GameEngine } from './game-engine.js';
 import { TelegramAPI } from './telegram/telegram-api.js';
+import { TelegramDesktopFix } from './telegram/telegram-desktop-fix.js';
+import { TelegramDebugger } from './telegram/telegram-debug.js';
 
 class App {
     constructor() {
         this.gameEngine = null;
         this.telegramAPI = null;
+        this.isTelegramDesktop = false;
+        this.isTelegramWebApp = false;
+        this.telegramDesktopFix = null;
+        this.telegramDebugger = null;
     }
 
     async init() {
         try {
             this.telegramAPI = new TelegramAPI();
             this.telegramAPI.init();
+
+            // Detect Telegram platform
+            this.detectTelegramPlatform();
+
+            // Initialize Telegram Desktop fixes if needed
+            if (this.isTelegramDesktop) {
+                this.telegramDesktopFix = new TelegramDesktopFix();
+                this.telegramDesktopFix.init();
+                
+                // Initialize debugger for development
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    this.telegramDebugger = new TelegramDebugger();
+                    this.telegramDebugger.init();
+                }
+            }
 
             this.gameEngine = new GameEngine();
             await this.gameEngine.init();
@@ -22,24 +43,58 @@ class App {
             window.gameEngineRef = this.gameEngine;
 
             console.log('Game successfully initialized');
+            console.log('Platform info:', {
+                isTelegramWebApp: this.isTelegramWebApp,
+                isTelegramDesktop: this.isTelegramDesktop,
+                userAgent: navigator.userAgent
+            });
         } catch (error) {
             console.error('Game initialization error:', error);
             this.showError('Ошибка загрузки игры');
         }
     }
 
+    detectTelegramPlatform() {
+        this.isTelegramWebApp = !!window.Telegram?.WebApp;
+        
+        if (this.isTelegramWebApp) {
+            // Check if it's desktop version
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isDesktop = !/android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+            
+            // Additional checks for Telegram Desktop
+            const isTelegramDesktopApp = userAgent.includes('telegram') || 
+                                       userAgent.includes('tgdesktop') ||
+                                       userAgent.includes('telegramdesktop');
+            
+            this.isTelegramDesktop = isDesktop && (isTelegramDesktopApp || this.isTelegramWebApp);
+            
+            // Add CSS class for Telegram Desktop
+            if (this.isTelegramDesktop) {
+                document.body.classList.add('telegram-desktop-mode');
+                console.log('Added telegram-desktop-mode CSS class');
+            }
+            
+            console.log('Telegram platform detection:', {
+                isTelegramWebApp: this.isTelegramWebApp,
+                isTelegramDesktop: this.isTelegramDesktop,
+                userAgent: navigator.userAgent,
+                isDesktop,
+                isTelegramDesktopApp
+            });
+        }
+    }
+
     bindEvents() {
         // Platform detection for different event handling
         const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const isTelegramWebApp = window.Telegram?.WebApp;
         const isDesktop = !isMobile;
-        const isTelegramDesktop = isTelegramWebApp && isDesktop;
         
         console.log('Platform detection:', { 
             isMobile, 
             isDesktop, 
-            isTelegramWebApp: !!isTelegramWebApp,
-            isTelegramDesktop,
+            isTelegramWebApp: this.isTelegramWebApp,
+            isTelegramDesktop: this.isTelegramDesktop,
             userAgent: navigator.userAgent
         });
 
@@ -49,7 +104,7 @@ class App {
                 type: event.type,
                 target: event.target.className,
                 dataset: event.target.dataset,
-                platform: { isMobile, isDesktop }
+                platform: { isMobile, isDesktop, isTelegramDesktop: this.isTelegramDesktop }
             });
 
             // Don't prevent default on desktop to allow normal click behavior
@@ -74,9 +129,12 @@ class App {
             }
         };
 
-        // Different event strategies for different platforms
-        if (isDesktop) {
-            // Desktop-specific event handling
+        // Special handling for Telegram Desktop
+        if (this.isTelegramDesktop) {
+            console.log('Setting up special event handling for Telegram Desktop');
+            this.setupTelegramDesktopEvents();
+        } else if (isDesktop) {
+            // Regular desktop event handling
             document.addEventListener('click', handleInteraction, { capture: true });
             document.addEventListener('mousedown', handleInteraction, { capture: true });
             
@@ -96,7 +154,7 @@ class App {
         }
 
         // Fallback: Direct button polling system for problematic platforms
-        if (isDesktop) {
+        if (isDesktop || this.isTelegramDesktop) {
             this.setupFallbackButtonSystem();
         }
 
@@ -107,6 +165,180 @@ class App {
         setInterval(() => {
             this.gameEngine?.autoSave();
         }, 30000);
+    }
+
+    setupTelegramDesktopEvents() {
+        console.log('Setting up Telegram Desktop specific event handling');
+        
+        // Multiple event binding strategies for Telegram Desktop
+        const eventTypes = ['click', 'mousedown', 'mouseup', 'touchstart', 'touchend'];
+        
+        eventTypes.forEach(eventType => {
+            document.addEventListener(eventType, (e) => {
+                if (e.target.classList.contains('action-button')) {
+                    const actionId = e.target.dataset.action;
+                    console.log(`Telegram Desktop ${eventType} action:`, actionId);
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.gameEngine.processAction(actionId);
+                    this.telegramAPI?.hapticFeedback();
+                    return;
+                }
+                
+                if (e.target.classList.contains('location-button')) {
+                    const locationId = e.target.dataset.location;
+                    console.log(`Telegram Desktop ${eventType} location:`, locationId);
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.gameEngine.moveToLocation(locationId);
+                    return;
+                }
+            }, { capture: true, passive: false });
+        });
+        
+        // Additional global event listener for Telegram Desktop
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('action-button') || e.target.classList.contains('location-button')) {
+                console.log('Telegram Desktop global click detected');
+                // Force the event to be processed
+                setTimeout(() => {
+                    if (e.target.classList.contains('action-button')) {
+                        const actionId = e.target.dataset.action;
+                        this.gameEngine.processAction(actionId);
+                    } else if (e.target.classList.contains('location-button')) {
+                        const locationId = e.target.dataset.location;
+                        this.gameEngine.moveToLocation(locationId);
+                    }
+                }, 10);
+            }
+        }, { capture: true });
+        
+        // Set up polling-based button system for Telegram Desktop
+        this.setupTelegramDesktopPolling();
+    }
+
+    setupTelegramDesktopPolling() {
+        console.log('Setting up Telegram Desktop polling system');
+        
+        const checkAndBindButtons = () => {
+            const actionButtons = document.querySelectorAll('.action-button');
+            const locationButtons = document.querySelectorAll('.location-button');
+            
+            actionButtons.forEach(button => {
+                if (!button.hasAttribute('data-telegram-desktop-bound')) {
+                    button.setAttribute('data-telegram-desktop-bound', 'true');
+                    
+                    const actionId = button.dataset.action;
+                    
+                    // Multiple binding strategies for Telegram Desktop
+                    const bindEvents = (element) => {
+                        const handlers = [
+                            () => {
+                                console.log('Telegram Desktop direct action:', actionId);
+                                this.gameEngine.processAction(actionId);
+                                this.telegramAPI?.hapticFeedback();
+                            },
+                            (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Telegram Desktop event action:', actionId);
+                                this.gameEngine.processAction(actionId);
+                                this.telegramAPI?.hapticFeedback();
+                            }
+                        ];
+                        
+                        handlers.forEach(handler => {
+                            element.onclick = handler;
+                            element.addEventListener('click', handler, { capture: true });
+                            element.addEventListener('mousedown', handler, { capture: true });
+                            element.addEventListener('mouseup', handler, { capture: true });
+                            element.addEventListener('touchstart', handler, { passive: false, capture: true });
+                            element.addEventListener('touchend', handler, { passive: false, capture: true });
+                        });
+                        
+                        // Make button more interactive
+                        element.style.cursor = 'pointer';
+                        element.style.userSelect = 'none';
+                        element.style.pointerEvents = 'auto';
+                        element.setAttribute('tabindex', '0');
+                    };
+                    
+                    bindEvents(button);
+                    
+                    // Also bind to parent container for better event capture
+                    const parent = button.parentElement;
+                    if (parent && !parent.hasAttribute('data-telegram-desktop-bound')) {
+                        parent.setAttribute('data-telegram-desktop-bound', 'true');
+                        bindEvents(parent);
+                    }
+                    
+                    console.log('Telegram Desktop bound to action button:', actionId);
+                }
+            });
+            
+            locationButtons.forEach(button => {
+                if (!button.hasAttribute('data-telegram-desktop-bound')) {
+                    button.setAttribute('data-telegram-desktop-bound', 'true');
+                    
+                    const locationId = button.dataset.location;
+                    
+                    const bindEvents = (element) => {
+                        const handlers = [
+                            () => {
+                                console.log('Telegram Desktop direct location:', locationId);
+                                this.gameEngine.moveToLocation(locationId);
+                            },
+                            (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Telegram Desktop event location:', locationId);
+                                this.gameEngine.moveToLocation(locationId);
+                            }
+                        ];
+                        
+                        handlers.forEach(handler => {
+                            element.onclick = handler;
+                            element.addEventListener('click', handler, { capture: true });
+                            element.addEventListener('mousedown', handler, { capture: true });
+                            element.addEventListener('mouseup', handler, { capture: true });
+                            element.addEventListener('touchstart', handler, { passive: false, capture: true });
+                            element.addEventListener('touchend', handler, { passive: false, capture: true });
+                        });
+                        
+                        element.style.cursor = 'pointer';
+                        element.style.userSelect = 'none';
+                        element.style.pointerEvents = 'auto';
+                        element.setAttribute('tabindex', '0');
+                    };
+                    
+                    bindEvents(button);
+                    
+                    const parent = button.parentElement;
+                    if (parent && !parent.hasAttribute('data-telegram-desktop-bound')) {
+                        parent.setAttribute('data-telegram-desktop-bound', 'true');
+                        bindEvents(parent);
+                    }
+                    
+                    console.log('Telegram Desktop bound to location button:', locationId);
+                }
+            });
+        };
+        
+        // Initial check
+        setTimeout(checkAndBindButtons, 100);
+        
+        // Frequent re-check for Telegram Desktop
+        setInterval(checkAndBindButtons, 1000);
+        
+        // Observer for DOM changes
+        const observer = new MutationObserver(() => {
+            setTimeout(checkAndBindButtons, 50);
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     }
 
     setupFallbackButtonSystem() {

@@ -473,3 +473,83 @@ body {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Special styles for Telegram Desktop compatibility */
+[data-telegram-desktop="true"] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}
+
+[data-telegram-desktop="true"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+[data-telegram-desktop="true"]:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Force button interactions in Telegram Desktop */
+[data-telegram-desktop="true"].action-button,
+[data-telegram-desktop="true"].location-button {
+    position: relative !important;
+    z-index: 100 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Telegram Desktop parent containers */
+[data-telegram-desktop-parent="true"] {
+    pointer-events: auto !important;
+    position: relative !important;
+}
+
+/* Enhanced focus states for Telegram Desktop */
+[data-telegram-desktop="true"]:focus {
+    outline: 2px solid var(--tg-theme-link-color);
+    outline-offset: 2px;
+}
+
+/* Force button visibility in Telegram Desktop */
+.telegram-desktop-mode .action-button,
+.telegram-desktop-mode .location-button {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* Telegram Desktop specific button enhancements */
+.telegram-desktop-mode button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+}
+
+/* Ensure buttons are clickable in Telegram Desktop */
+.telegram-desktop-mode .action-button,
+.telegram-desktop-mode .location-button {
+    position: relative;
+    z-index: 10;
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: normal;
+}

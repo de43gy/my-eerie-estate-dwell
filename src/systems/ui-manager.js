@@ -115,6 +115,11 @@ export class UIManager {
             actionButton.style.position = 'relative';
             actionButton.style.zIndex = '10';
             
+            // Special attributes for Telegram Desktop compatibility
+            actionButton.setAttribute('role', 'button');
+            actionButton.setAttribute('tabindex', '0');
+            actionButton.setAttribute('aria-label', action.name);
+            
             if (action.timeCost) {
                 const timeCost = document.createElement('span');
                 timeCost.className = 'action-time';
@@ -161,6 +166,50 @@ export class UIManager {
                 actionButton.style.display = 'flex';
                 actionButton.style.visibility = 'visible';
                 actionButton.style.opacity = '1';
+            }
+
+            // Special handling for Telegram Desktop
+            const isTelegramWebApp = !!window.Telegram?.WebApp;
+            if (isTelegramWebApp && isDesktop) {
+                // Add Telegram Desktop specific attributes
+                actionButton.setAttribute('data-telegram-desktop', 'true');
+                actionButton.setAttribute('data-action-id', action.id);
+                
+                // Force button to be interactive
+                actionButton.style.pointerEvents = 'auto';
+                actionButton.style.cursor = 'pointer';
+                actionButton.style.userSelect = 'none';
+                
+                // Add multiple event listeners for Telegram Desktop
+                const telegramHandlers = [
+                    (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Telegram Desktop action button:', action.id);
+                        if (window.gameEngineRef) {
+                            window.gameEngineRef.processAction(action.id);
+                        }
+                    },
+                    (e) => {
+                        console.log('Telegram Desktop mousedown:', action.id);
+                        if (window.gameEngineRef) {
+                            window.gameEngineRef.processAction(action.id);
+                        }
+                    }
+                ];
+                
+                telegramHandlers.forEach(handler => {
+                    actionButton.addEventListener('click', handler, { capture: true });
+                    actionButton.addEventListener('mousedown', handler, { capture: true });
+                    actionButton.addEventListener('mouseup', handler, { capture: true });
+                });
+                
+                // Also bind to parent for better event capture
+                const parent = actionButton.parentElement;
+                if (parent) {
+                    parent.setAttribute('data-telegram-desktop-parent', 'true');
+                    parent.style.pointerEvents = 'auto';
+                }
             }
 
             actionsList.appendChild(actionButton);
@@ -228,11 +277,62 @@ export class UIManager {
             locationButton.dataset.location = connection.id;
             locationButton.textContent = connection.name;
             
+            // Special attributes for Telegram Desktop compatibility
+            locationButton.setAttribute('role', 'button');
+            locationButton.setAttribute('tabindex', '0');
+            locationButton.setAttribute('aria-label', `Перейти в ${connection.name}`);
+            
             if (connection.state && connection.state.condition) {
                 const condition = document.createElement('span');
                 condition.className = 'location-condition';
                 condition.textContent = ` (${connection.state.condition})`;
                 locationButton.appendChild(condition);
+            }
+
+            // Special handling for Telegram Desktop
+            const isTelegramWebApp = !!window.Telegram?.WebApp;
+            const isDesktop = !/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isTelegramWebApp && isDesktop) {
+                // Add Telegram Desktop specific attributes
+                locationButton.setAttribute('data-telegram-desktop', 'true');
+                locationButton.setAttribute('data-location-id', connection.id);
+                
+                // Force button to be interactive
+                locationButton.style.pointerEvents = 'auto';
+                locationButton.style.cursor = 'pointer';
+                locationButton.style.userSelect = 'none';
+                
+                // Add multiple event listeners for Telegram Desktop
+                const telegramHandlers = [
+                    (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Telegram Desktop location button:', connection.id);
+                        if (window.gameEngineRef) {
+                            window.gameEngineRef.moveToLocation(connection.id);
+                        }
+                    },
+                    (e) => {
+                        console.log('Telegram Desktop location mousedown:', connection.id);
+                        if (window.gameEngineRef) {
+                            window.gameEngineRef.moveToLocation(connection.id);
+                        }
+                    }
+                ];
+                
+                telegramHandlers.forEach(handler => {
+                    locationButton.addEventListener('click', handler, { capture: true });
+                    locationButton.addEventListener('mousedown', handler, { capture: true });
+                    locationButton.addEventListener('mouseup', handler, { capture: true });
+                });
+                
+                // Also bind to parent for better event capture
+                const parent = locationButton.parentElement;
+                if (parent) {
+                    parent.setAttribute('data-telegram-desktop-parent', 'true');
+                    parent.style.pointerEvents = 'auto';
+                }
             }
 
             navigationContainer.appendChild(locationButton);
