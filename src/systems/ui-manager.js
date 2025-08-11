@@ -146,16 +146,11 @@ export class UIManager {
                 }
             };
             
-            // Multiple event binding approaches for maximum compatibility
+            // SIMPLE APPROACH: Use direct onclick like in working app
             actionButton.onclick = handleClick;
-            actionButton.addEventListener('click', handleClick, { capture: true });
-            actionButton.addEventListener('mousedown', handleClick, { capture: true });
-            actionButton.addEventListener('touchend', handleClick, { passive: false });
             
-            // Additional event types for better compatibility
-            actionButton.addEventListener('mouseup', handleClick, { capture: true });
-            actionButton.addEventListener('pointerdown', handleClick, { capture: true });
-            actionButton.addEventListener('pointerup', handleClick, { capture: true });
+            // Also add basic event listener for compatibility
+            actionButton.addEventListener('click', handleClick, { capture: true });
             
             // Desktop-specific enhancements
             const isDesktop = !/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -187,31 +182,15 @@ export class UIManager {
                 actionButton.style.cursor = 'pointer';
                 actionButton.style.userSelect = 'none';
                 
-                // Add multiple event listeners for Telegram Desktop
-                const telegramHandlers = [
-                    (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Telegram Desktop action button:', action.id);
-                        if (window.gameEngineRef) {
-                            window.gameEngineRef.processAction(action.id);
-                        }
-                    },
-                    (e) => {
-                        console.log('Telegram Desktop mousedown:', action.id);
-                        if (window.gameEngineRef) {
-                            window.gameEngineRef.processAction(action.id);
-                        }
+                // SIMPLE TELEGRAM DESKTOP: Just use onclick
+                actionButton.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Telegram Desktop action button:', action.id);
+                    if (window.gameEngineRef) {
+                        window.gameEngineRef.processAction(action.id);
                     }
-                ];
-                
-                telegramHandlers.forEach(handler => {
-                    actionButton.addEventListener('click', handler, { capture: true });
-                    actionButton.addEventListener('mousedown', handler, { capture: true });
-                    actionButton.addEventListener('mouseup', handler, { capture: true });
-                    actionButton.addEventListener('pointerdown', handler, { capture: true });
-                    actionButton.addEventListener('pointerup', handler, { capture: true });
-                });
+                };
                 
                 // Also bind to parent for better event capture
                 const parent = actionButton.parentElement;
@@ -220,7 +199,7 @@ export class UIManager {
                     parent.style.pointerEvents = 'auto';
                 }
                 
-                // Ultimate fallback - inline onclick
+                // Ultimate fallback - inline onclick (like in working app)
                 actionButton.setAttribute('onclick', `if(window.gameEngineRef)window.gameEngineRef.processAction('${action.id}')`);
             }
 
@@ -315,31 +294,15 @@ export class UIManager {
                 locationButton.style.cursor = 'pointer';
                 locationButton.style.userSelect = 'none';
                 
-                // Add multiple event listeners for Telegram Desktop
-                const telegramHandlers = [
-                    (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Telegram Desktop location button:', connection.id);
-                        if (window.gameEngineRef) {
-                            window.gameEngineRef.moveToLocation(connection.id);
-                        }
-                    },
-                    (e) => {
-                        console.log('Telegram Desktop location mousedown:', connection.id);
-                        if (window.gameEngineRef) {
-                            window.gameEngineRef.moveToLocation(connection.id);
-                        }
+                // SIMPLE TELEGRAM DESKTOP: Just use onclick
+                locationButton.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Telegram Desktop location button:', connection.id);
+                    if (window.gameEngineRef) {
+                        window.gameEngineRef.moveToLocation(connection.id);
                     }
-                ];
-                
-                telegramHandlers.forEach(handler => {
-                    locationButton.addEventListener('click', handler, { capture: true });
-                    locationButton.addEventListener('mousedown', handler, { capture: true });
-                    locationButton.addEventListener('mouseup', handler, { capture: true });
-                    locationButton.addEventListener('pointerdown', handler, { capture: true });
-                    locationButton.addEventListener('pointerup', handler, { capture: true });
-                });
+                };
                 
                 // Also bind to parent for better event capture
                 const parent = locationButton.parentElement;
@@ -348,11 +311,11 @@ export class UIManager {
                     parent.style.pointerEvents = 'auto';
                 }
                 
-                // Ultimate fallback - inline onclick
+                // Ultimate fallback - inline onclick (like in working app)
                 locationButton.setAttribute('onclick', `if(window.gameEngineRef)window.gameEngineRef.moveToLocation('${connection.id}')`);
             }
             
-            // Add basic event handlers for all platforms
+            // SIMPLE APPROACH: Use direct onclick like in working app
             const handleLocationClick = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -362,14 +325,9 @@ export class UIManager {
                 }
             };
             
-            // Multiple event binding for maximum compatibility
+            // Simple event binding for maximum compatibility
             locationButton.onclick = handleLocationClick;
             locationButton.addEventListener('click', handleLocationClick, { capture: true });
-            locationButton.addEventListener('mousedown', handleLocationClick, { capture: true });
-            locationButton.addEventListener('mouseup', handleLocationClick, { capture: true });
-            locationButton.addEventListener('pointerdown', handleLocationClick, { capture: true });
-            locationButton.addEventListener('pointerup', handleLocationClick, { capture: true });
-            locationButton.addEventListener('touchend', handleLocationClick, { passive: false });
             
             // Force button to be interactive
             locationButton.style.pointerEvents = 'auto';
