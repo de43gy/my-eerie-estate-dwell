@@ -51,130 +51,14 @@
         <div id="message-display"></div>
     </div>
 
-    <!-- Simple loading without modules -->
     <script>
-        // Simple global functions for click handling
-        function handleActionClick(actionId) {
-            console.log('Global: Action clicked:', actionId);
-            if (window.gameEngine) {
-                window.gameEngine.processAction(actionId);
-                // Add haptic feedback
-                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
-                    try {
-                        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-                    } catch (e) {
-                        console.log('Haptic feedback not available:', e.message);
-                    }
-                }
-            } else {
-                console.log('Game engine not ready yet');
-            }
-        }
-        
-        function handleLocationClick(locationId) {
-            console.log('Global: Location clicked:', locationId);
-            if (window.gameEngine) {
-                window.gameEngine.moveToLocation(locationId);
-            } else {
-                console.log('Game engine not ready yet');
-            }
-        }
-        
-        // Detect if we're in desktop Telegram
-        function isDesktopTelegram() {
-            try {
-                if (!window.Telegram || !window.Telegram.WebApp) return false;
-                const platform = window.Telegram.WebApp.platform;
-                // Desktop versions usually have platforms like 'macos', 'windows', 'linux' or 'unknown'
-                return platform && 
-                       !platform.includes('mobile') && 
-                       !platform.includes('android') && 
-                       !platform.includes('ios') &&
-                       platform !== 'web';
-            } catch (e) {
-                return false;
-            }
-        }
-        
-        // Simple Telegram WebApp initialization
+        // Simple Telegram WebApp initialization - just like in working app
         if (window.Telegram && window.Telegram.WebApp) {
-            try {
-                window.Telegram.WebApp.ready();
-                console.log('Telegram WebApp ready called');
-            } catch (e) {
-                console.log('Telegram WebApp not available');
-            }
+            window.Telegram.WebApp.ready();
         }
-        
-        // Handle page load and event delegation
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, setting up event delegation');
-            
-            // Universal delegation for all buttons
-            document.addEventListener('click', function(e) {
-                // Handle game buttons
-                if (e.target.classList.contains('action-button')) {
-                    const actionId = e.target.dataset.action;
-                    if (actionId) {
-                        console.log('Action button clicked via delegation:', actionId);
-                        handleActionClick(actionId);
-                    }
-                    return;
-                }
-                
-                if (e.target.classList.contains('location-button')) {
-                    const locationId = e.target.dataset.location;
-                    if (locationId) {
-                        console.log('Location button clicked via delegation:', locationId);
-                        handleLocationClick(locationId);
-                    }
-                    return;
-                }
-            }, false);
-            
-            // Special handling for desktop Telegram - add direct listeners
-            if (isDesktopTelegram()) {
-                console.log('Setting up desktop Telegram fallback');
-                
-                function addDesktopListeners() {
-                    document.querySelectorAll('.action-button:not([data-desktop-listener])').forEach(btn => {
-                        btn.setAttribute('data-desktop-listener', 'true');
-                        btn.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            console.log('Desktop: Action button clicked:', this.dataset.action);
-                            handleActionClick(this.dataset.action);
-                        });
-                    });
-                    
-                    document.querySelectorAll('.location-button:not([data-desktop-listener])').forEach(btn => {
-                        btn.setAttribute('data-desktop-listener', 'true');
-                        btn.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            console.log('Desktop: Location button clicked:', this.dataset.location);
-                            handleLocationClick(this.dataset.location);
-                        });
-                    });
-                }
-                
-                // Add listeners to existing buttons
-                setTimeout(addDesktopListeners, 1000);
-                
-                // Watch for new buttons with debounce
-                let updateTimeout;
-                const observer = new MutationObserver(() => {
-                    clearTimeout(updateTimeout);
-                    updateTimeout = setTimeout(addDesktopListeners, 200);
-                });
-                
-                observer.observe(document.body, {
-                    childList: true,
-                    subtree: true
-                });
-            }
-        });
     </script>
     
-    <!-- Load modules only after initialization -->
+    <!-- Load modules -->
     <script type="module" src="src/main.js"></script>
 </body>
 </html>

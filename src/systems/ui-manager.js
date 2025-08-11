@@ -111,6 +111,20 @@ export class UIManager {
             actionButton.textContent = action.name;
             actionButton.type = 'button';
             
+            // Add direct onclick for desktop compatibility
+            actionButton.onclick = function() {
+                console.log('UIManager: Direct onclick for action:', action.id);
+                if (window.gameEngine) {
+                    window.gameEngine.processAction(action.id);
+                    // Add haptic feedback
+                    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                        try {
+                            window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+                        } catch (e) {}
+                    }
+                }
+            };
+            
             if (action.timeCost) {
                 const timeCost = document.createElement('span');
                 timeCost.className = 'action-time';
@@ -190,6 +204,14 @@ export class UIManager {
             locationButton.dataset.location = connection.id;
             locationButton.textContent = connection.name;
             locationButton.type = 'button';
+            
+            // Add direct onclick for desktop compatibility
+            locationButton.onclick = function() {
+                console.log('UIManager: Direct onclick for location:', connection.id);
+                if (window.gameEngine) {
+                    window.gameEngine.moveToLocation(connection.id);
+                }
+            };
             
             if (connection.state && connection.state.condition) {
                 const condition = document.createElement('span');
