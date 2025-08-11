@@ -33,15 +33,38 @@ export class TelegramAPI {
 
         const root = document.documentElement;
         
+        // Определяем тему на основе цвета фона
+        const bgColor = this.tg.backgroundColor || '#ffffff';
+        const isDark = this.isColorDark(bgColor);
+        
+        // Устанавливаем атрибут темы
+        document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        
+        // Устанавливаем CSS переменные из Telegram
         root.style.setProperty('--tg-theme-bg-color', this.tg.backgroundColor || '#ffffff');
         root.style.setProperty('--tg-theme-text-color', this.tg.textColor || '#000000');
         root.style.setProperty('--tg-theme-hint-color', this.tg.hintColor || '#999999');
         root.style.setProperty('--tg-theme-link-color', this.tg.linkColor || '#2481cc');
         root.style.setProperty('--tg-theme-button-color', this.tg.buttonColor || '#2481cc');
         root.style.setProperty('--tg-theme-button-text-color', this.tg.buttonTextColor || '#ffffff');
+        root.style.setProperty('--tg-theme-secondary-bg-color', this.tg.secondaryBackgroundColor || (isDark ? '#232e3c' : '#f1f1f1'));
         
         document.body.style.backgroundColor = this.tg.backgroundColor || '#ffffff';
         document.body.style.color = this.tg.textColor || '#000000';
+        
+        console.log(`Тема установлена: ${isDark ? 'темная' : 'светлая'}`);
+    }
+    
+    isColorDark(color) {
+        // Конвертируем цвет в RGB и определяем яркость
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Формула для определения яркости
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness < 128;
     }
 
     setupBackButton() {
