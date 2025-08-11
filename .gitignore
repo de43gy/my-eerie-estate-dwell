@@ -62,3 +62,6 @@ coverage/
 # ai agents and tools
 .claude/
 CLAUDE.md
+
+# Documentation
+docs/
