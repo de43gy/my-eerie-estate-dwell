@@ -10,26 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(compression());
 
 app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: [
-                "'self'", 
-                "'unsafe-inline'",
-                "'unsafe-eval'",
-                "'unsafe-hashes'",
-                "https://telegram.org"
-            ],
-            "script-src-attr": ["'unsafe-inline'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'", "https://telegram.org"],
-            fontSrc: ["'self'", "https:", "data:"],
-            objectSrc: ["'none'"],
-            mediaSrc: ["'self'"],
-            frameSrc: ["'none'"],
-        },
-    },
+    contentSecurityPolicy: false, 
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
@@ -73,19 +54,13 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Handle 404 - return index.html only for HTML requests
 app.use((req, res) => {
-    // If API endpoint is requested, return 404
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API endpoint not found' });
     }
-    
-    // If static file is requested (js, css, json), return 404
     if (req.path.match(/\.(js|css|json|png|jpg|ico)$/)) {
         return res.status(404).send('File not found');
     }
-    
-    // For all other requests return index.html
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 

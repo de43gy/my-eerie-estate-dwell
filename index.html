@@ -10,16 +10,6 @@
 </head>
 <body>
     <div id="game-container">
-        <button 
-            id="test-button"
-            disabled 
-            onclick="handleTestClick()" 
-            style="padding: 20px; font-size: 18px; margin-bottom: 20px; width: 100%; border: 2px solid #999; color: #999; background-color: #ccc; cursor: not-allowed;">
-            ЗАГРУЗКА...
-        </button>
-
-        <div id="test-output" style="padding: 10px; border: 1px solid green; color: green; text-align: center; margin-bottom: 20px; font-weight: bold;"></div>
-
         <div id="character-status">
             <div id="time-display">День 1, 08:00 (Утро)</div>
             <div id="needs-display"></div>
@@ -49,18 +39,6 @@
     <script>
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
-        }
-
-        function handleTestClick() {
-            if (window.gameEngine) {
-                console.log("Вызов действия: examine_room");
-                window.gameEngine.processAction('examine_room');
-            } else {
-                const outputDiv = document.getElementById('test-output');
-                if (outputDiv) {
-                    outputDiv.textContent = 'ОШИБКА: Игровой движок еще не инициализирован.';
-                }
-            }
         }
     </script>
     
