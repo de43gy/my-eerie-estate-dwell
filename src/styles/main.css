@@ -59,36 +59,53 @@
 /* Base button styles for all platforms */
 .action-button,
 .location-button {
-    /* Force visibility and interaction */
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
+    /* Basic button properties */
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
     
-    /* Ensure proper sizing */
-    min-height: 44px;
-    min-width: 44px;
-    
-    /* Force cursor */
-    cursor: pointer !important;
+    /* Ensure visibility */
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
     
     /* Prevent text selection */
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-    
-    /* Ensure proper positioning */
-    position: relative;
-    z-index: 10;
-    
-    /* Force border box */
-    box-sizing: border-box;
-    
-    /* Ensure text is visible */
-    color: inherit !important;
-    background: inherit !important;
-    border: inherit !important;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.action-button {
+    background: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
+}
+
+.action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+.location-button {
+    border: 2px solid var(--tg-theme-button-color);
+    background: transparent;
+    color: var(--tg-theme-button-color);
+}
+
+.location-button:hover {
+    background: var(--tg-theme-button-color);
+    color: var(--tg-theme-button-text-color);
 }
 
 * {
@@ -280,68 +297,6 @@ body {
     gap: 8px;
 }
 
-.action-button {
-    width: 100%;
-    padding: 12px 16px;
-    border: none;
-    border-radius: 6px;
-    background: var(--tg-theme-button-color);
-    color: var(--tg-theme-button-text-color);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    text-align: left;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    
-    /* Enhanced touch event support */
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    
-    /* Ensure element is accessible for clicks */
-    pointer-events: auto !important;
-    z-index: 10;
-    
-    /* Force interaction on desktop */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    
-    /* Desktop-specific button fixes */
-    outline: none;
-    background-clip: padding-box;
-    
-    /* Force visibility */
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-.action-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.action-button:active {
-    transform: translateY(0);
-}
-
-.action-button:disabled {
-    background: var(--border-color);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-    color: var(--text-secondary);
-}
-
 .action-time,
 .action-energy {
     font-size: 12px;
@@ -369,51 +324,6 @@ body {
 #location-buttons {
     display: grid;
     gap: 6px;
-}
-
-.location-button {
-    padding: 10px 12px;
-    border: 2px solid var(--tg-theme-button-color);
-    border-radius: 6px;
-    background: transparent;
-    color: var(--tg-theme-button-color);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    text-align: left;
-    
-    /* Enhanced touch event support */
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    
-    /* Ensure element is accessible for clicks */
-    pointer-events: auto !important;
-    z-index: 10;
-    
-    /* Force interaction on desktop */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    
-    /* Desktop-specific button fixes */
-    outline: none;
-    background-clip: padding-box;
-    
-    /* Force visibility */
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-.location-button:hover {
-    background: var(--tg-theme-button-color);
-    color: var(--tg-theme-button-text-color);
 }
 
 .location-condition {
@@ -513,84 +423,4 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-/* Special styles for Telegram Desktop compatibility */
-[data-telegram-desktop="true"] {
-    pointer-events: auto !important;
-    cursor: pointer !important;
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-}
-
-[data-telegram-desktop="true"]:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-[data-telegram-desktop="true"]:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* Force button interactions in Telegram Desktop */
-[data-telegram-desktop="true"].action-button,
-[data-telegram-desktop="true"].location-button {
-    position: relative !important;
-    z-index: 100 !important;
-    pointer-events: auto !important;
-    cursor: pointer !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Telegram Desktop parent containers */
-[data-telegram-desktop-parent="true"] {
-    pointer-events: auto !important;
-    position: relative !important;
-}
-
-/* Enhanced focus states for Telegram Desktop */
-[data-telegram-desktop="true"]:focus {
-    outline: 2px solid var(--tg-theme-link-color);
-    outline-offset: 2px;
-}
-
-/* Force button visibility in Telegram Desktop */
-.telegram-desktop-mode .action-button,
-.telegram-desktop-mode .location-button {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}
-
-/* Telegram Desktop specific button enhancements */
-.telegram-desktop-mode button {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    border: none;
-    background: none;
-    font-family: inherit;
-    font-size: inherit;
-    cursor: pointer;
-}
-
-/* Ensure buttons are clickable in Telegram Desktop */
-.telegram-desktop-mode .action-button,
-.telegram-desktop-mode .location-button {
-    position: relative;
-    z-index: 10;
-    min-height: 44px;
-    min-width: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    word-wrap: break-word;
-    white-space: normal;
 }

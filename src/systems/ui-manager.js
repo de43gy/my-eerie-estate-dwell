@@ -110,15 +110,13 @@ export class UIManager {
             actionButton.dataset.action = action.id;
             actionButton.textContent = action.name;
             
-            // Add additional debug information
-            actionButton.setAttribute('data-debug', `action-${action.id}`);
-            actionButton.style.position = 'relative';
-            actionButton.style.zIndex = '10';
-            
-            // Special attributes for Telegram Desktop compatibility
-            actionButton.setAttribute('role', 'button');
-            actionButton.setAttribute('tabindex', '0');
-            actionButton.setAttribute('aria-label', action.name);
+            // SIMPLE: Just like in working app - direct onclick
+            actionButton.onclick = () => {
+                console.log('Action button clicked:', action.id);
+                if (window.gameEngineRef) {
+                    window.gameEngineRef.processAction(action.id);
+                }
+            };
             
             if (action.timeCost) {
                 const timeCost = document.createElement('span');
@@ -132,75 +130,6 @@ export class UIManager {
                 energyCost.className = 'action-energy';
                 energyCost.textContent = ` [-${action.energyCost} энергии]`;
                 actionButton.appendChild(energyCost);
-            }
-
-            // Add event handlers directly to the button with multiple strategies
-            const handleClick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Direct button click:', action.id);
-                
-                // Direct game engine call as backup
-                if (window.gameEngineRef) {
-                    window.gameEngineRef.processAction(action.id);
-                }
-            };
-            
-            // SIMPLE APPROACH: Use direct onclick like in working app
-            actionButton.onclick = handleClick;
-            
-            // Also add basic event listener for compatibility
-            actionButton.addEventListener('click', handleClick, { capture: true });
-            
-            // Desktop-specific enhancements
-            const isDesktop = !/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if (isDesktop) {
-                actionButton.setAttribute('tabindex', '0');
-                actionButton.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        handleClick(e);
-                    }
-                });
-                
-                // Force visibility and interaction
-                actionButton.style.display = 'flex';
-                actionButton.style.visibility = 'visible';
-                actionButton.style.opacity = '1';
-                actionButton.style.pointerEvents = 'auto';
-                actionButton.style.cursor = 'pointer';
-            }
-
-            // Special handling for Telegram Desktop
-            const isTelegramWebApp = !!window.Telegram?.WebApp;
-            if (isTelegramWebApp && isDesktop) {
-                // Add Telegram Desktop specific attributes
-                actionButton.setAttribute('data-telegram-desktop', 'true');
-                actionButton.setAttribute('data-action-id', action.id);
-                
-                // Force button to be interactive
-                actionButton.style.pointerEvents = 'auto';
-                actionButton.style.cursor = 'pointer';
-                actionButton.style.userSelect = 'none';
-                
-                // SIMPLE TELEGRAM DESKTOP: Just use onclick
-                actionButton.onclick = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Telegram Desktop action button:', action.id);
-                    if (window.gameEngineRef) {
-                        window.gameEngineRef.processAction(action.id);
-                    }
-                };
-                
-                // Also bind to parent for better event capture
-                const parent = actionButton.parentElement;
-                if (parent) {
-                    parent.setAttribute('data-telegram-desktop-parent', 'true');
-                    parent.style.pointerEvents = 'auto';
-                }
-                
-                // Ultimate fallback - inline onclick (like in working app)
-                actionButton.setAttribute('onclick', `if(window.gameEngineRef)window.gameEngineRef.processAction('${action.id}')`);
             }
 
             actionsList.appendChild(actionButton);
@@ -268,10 +197,13 @@ export class UIManager {
             locationButton.dataset.location = connection.id;
             locationButton.textContent = connection.name;
             
-            // Special attributes for Telegram Desktop compatibility
-            locationButton.setAttribute('role', 'button');
-            locationButton.setAttribute('tabindex', '0');
-            locationButton.setAttribute('aria-label', `Перейти в ${connection.name}`);
+            // SIMPLE: Just like in working app - direct onclick
+            locationButton.onclick = () => {
+                console.log('Location button clicked:', connection.id);
+                if (window.gameEngineRef) {
+                    window.gameEngineRef.moveToLocation(connection.id);
+                }
+            };
             
             if (connection.state && connection.state.condition) {
                 const condition = document.createElement('span');
@@ -279,62 +211,6 @@ export class UIManager {
                 condition.textContent = ` (${connection.state.condition})`;
                 locationButton.appendChild(condition);
             }
-
-            // Special handling for Telegram Desktop
-            const isTelegramWebApp = !!window.Telegram?.WebApp;
-            const isDesktop = !/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            if (isTelegramWebApp && isDesktop) {
-                // Add Telegram Desktop specific attributes
-                locationButton.setAttribute('data-telegram-desktop', 'true');
-                locationButton.setAttribute('data-location-id', connection.id);
-                
-                // Force button to be interactive
-                locationButton.style.pointerEvents = 'auto';
-                locationButton.style.cursor = 'pointer';
-                locationButton.style.userSelect = 'none';
-                
-                // SIMPLE TELEGRAM DESKTOP: Just use onclick
-                locationButton.onclick = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Telegram Desktop location button:', connection.id);
-                    if (window.gameEngineRef) {
-                        window.gameEngineRef.moveToLocation(connection.id);
-                    }
-                };
-                
-                // Also bind to parent for better event capture
-                const parent = locationButton.parentElement;
-                if (parent) {
-                    parent.setAttribute('data-telegram-desktop-parent', 'true');
-                    parent.style.pointerEvents = 'auto';
-                }
-                
-                // Ultimate fallback - inline onclick (like in working app)
-                locationButton.setAttribute('onclick', `if(window.gameEngineRef)window.gameEngineRef.moveToLocation('${connection.id}')`);
-            }
-            
-            // SIMPLE APPROACH: Use direct onclick like in working app
-            const handleLocationClick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Location button clicked:', connection.id);
-                if (window.gameEngineRef) {
-                    window.gameEngineRef.moveToLocation(connection.id);
-                }
-            };
-            
-            // Simple event binding for maximum compatibility
-            locationButton.onclick = handleLocationClick;
-            locationButton.addEventListener('click', handleLocationClick, { capture: true });
-            
-            // Force button to be interactive
-            locationButton.style.pointerEvents = 'auto';
-            locationButton.style.cursor = 'pointer';
-            locationButton.style.display = 'flex';
-            locationButton.style.visibility = 'visible';
-            locationButton.style.opacity = '1';
 
             navigationContainer.appendChild(locationButton);
         });
